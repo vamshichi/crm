@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  password String
+  name     String
+  role     String
+}
+
+model Lead {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  phone     String
+  status    String
+  interests String?
+  notes     String?
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  employeeId String  @db.ObjectId  // ✅ Add this field for the relation
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)  // ✅ Define relation
+}
+enum Company {
+  IPS
+  GMEC
+  TASCON
+  FPS
+}
+model Employee {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String   @unique
+  role     String
+  phone    String
+  password String
+  company  Company
+   leads Lead[]
+}
+
+model SalesTarget {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  category String
+  period   String
+  target   Float
+  achieved Float
+}
+
+
