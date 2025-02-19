@@ -7,51 +7,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  email    String @unique
-  password String
-  name     String
-  role     String
+model Employee {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String     @unique
+  password     String
+  role         String
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String     @db.ObjectId
+  leads        Lead[]
+  createdAt    DateTime   @default(now())
 }
 
 model Lead {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String
-  phone     String
-  status    String
-  interests String?
-  notes     String?
-  category  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  employeeId String  @db.ObjectId  // ✅ Add this field for the relation
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)  // ✅ Define relation
-}
-enum Company {
-  IPS
-  GMEC
-  TASCON
-  FPS
-}
-model Employee {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String   @unique
-  role     String
-  phone    String
-  password String
-  company  Company
-   leads Lead[]
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String
+  company      String
+  phone        String
+  city         String
+  message      String
+  status       LeadStatus
+  callBackTime DateTime?
+  employee     Employee   @relation(fields: [employeeId], references: [id])
+  employeeId   String     @db.ObjectId
+  createdAt    DateTime   @default(now())
 }
 
-model SalesTarget {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  category String
-  period   String
-  target   Float
-  achieved Float
+model Department {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String     @unique
+  employees Employee[]
+  target    Target?
 }
 
+model Target {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String     @unique @db.ObjectId
+  amount       Float
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime   @default(now())
+}
 
+enum LeadStatus {
+  HOT
+  COLD
+  WARM
+  SOLD
+  CALL_BACK
+}

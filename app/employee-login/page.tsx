@@ -16,7 +16,7 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/employee-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -24,9 +24,8 @@ export default function LoginPage() {
 
       const data = await res.json()
 
-      if (data.success) {
-        localStorage.setItem("token", data.token) // Store token
-        router.push("/leads")
+      if (data.success && data.employee?.id) {
+        router.push(`/employee/${data.employee.id}`) // Redirect to employee dashboard
       } else {
         setError("Invalid email or password")
       }
@@ -89,4 +88,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
