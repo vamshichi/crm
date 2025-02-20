@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+interface DepartmentType {
+  id: string;
+  name: string;
+  // Add other fields if necessary
+}
+
 export default function DepartmentPage() {
-  const [departments, setDepartments] = useState([]);
+  const [departments, setDepartments] = useState<DepartmentType[]>([]);
   const [name, setName] = useState("");
   const [editId, setEditId] = useState("");
 
@@ -33,7 +39,11 @@ export default function DepartmentPage() {
 
   // Handle Delete
   const handleDelete = async (id: string) => {
-    await fetch("/api/department", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    await fetch("/api/department", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
     fetchDepartments();
   };
 
@@ -42,17 +52,36 @@ export default function DepartmentPage() {
       <h2 className="text-xl font-semibold mb-4">Manage Departments</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" placeholder="Department Name" className="w-full p-2 border rounded" value={name} onChange={(e) => setName(e.target.value)} required />
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">{editId ? "Update" : "Add"} Department</button>
+        <input
+          type="text"
+          placeholder="Department Name"
+          className="w-full p-2 border rounded"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+          {editId ? "Update" : "Add"} Department
+        </button>
       </form>
 
       <ul className="mt-4">
-        {departments.map((dept: any) => (
+        {departments.map((dept: DepartmentType) => (
           <li key={dept.id} className="flex justify-between p-2 border-b">
             {dept.name}
             <div>
-              <button className="text-blue-500 mr-2" onClick={() => { setEditId(dept.id); setName(dept.name); }}>Edit</button>
-              <button className="text-red-500" onClick={() => handleDelete(dept.id)}>Delete</button>
+              <button
+                className="text-blue-500 mr-2"
+                onClick={() => {
+                  setEditId(dept.id);
+                  setName(dept.name);
+                }}
+              >
+                Edit
+              </button>
+              <button className="text-red-500" onClick={() => handleDelete(dept.id)}>
+                Delete
+              </button>
             </div>
           </li>
         ))}

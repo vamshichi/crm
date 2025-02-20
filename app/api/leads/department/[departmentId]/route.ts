@@ -8,7 +8,7 @@ export async function GET(req: Request, { params }: { params: { departmentId: st
     });
 
     return NextResponse.json({ count });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to fetch department lead count" }, { status: 500 });
   }
 }

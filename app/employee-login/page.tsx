@@ -1,40 +1,40 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
       const res = await fetch("/api/employee-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (data.success && data.employee?.id) {
-        router.push(`/employee/${data.employee.id}`) // Redirect to employee dashboard
+        router.push(`/employee/${data.employee.id}`); // Redirect to employee dashboard
       } else {
-        setError("Invalid email or password")
+        setError("Invalid email or password");
       }
-    } catch (err) {
-      setError("Something went wrong. Try again!")
+    } catch (_err) {
+      setError("Something went wrong. Try again!");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -86,5 +86,5 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

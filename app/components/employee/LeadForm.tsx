@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation"; // Get the URL path
+import { usePathname } from "next/navigation"; // We are using usePathname, not useRouter
+// Removed unused useRouter import
 
 export default function LeadForm() {
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ export default function LeadForm() {
     city: "",
     message: "",
     status: "HOT",
-    employeeId: "", // This should be set dynamically from the URL
+    employeeId: "", // This will be set dynamically from the URL
     callBackTime: "",
   });
 
@@ -30,7 +30,9 @@ export default function LeadForm() {
     }
   }, [pathname]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -63,7 +65,7 @@ export default function LeadForm() {
       } else {
         setMessage(data.error || "Failed to add lead.");
       }
-    } catch (error) {
+    } catch (_error) {
       setMessage("An error occurred.");
     } finally {
       setLoading(false);
@@ -75,28 +77,83 @@ export default function LeadForm() {
       <h2 className="text-xl font-semibold mb-4">Add Lead</h2>
       {message && <p className="text-green-600">{message}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="name" placeholder="Lead Name" className="w-full p-2 border rounded" onChange={handleChange} value={formData.name} required />
-        <input type="email" name="email" placeholder="Email" className="w-full p-2 border rounded" onChange={handleChange} value={formData.email} required />
-        <input type="text" name="company" placeholder="Company" className="w-full p-2 border rounded" onChange={handleChange} value={formData.company} />
-        <input type="text" name="phone" placeholder="Phone" className="w-full p-2 border rounded" onChange={handleChange} value={formData.phone} />
-        <input type="text" name="city" placeholder="City" className="w-full p-2 border rounded" onChange={handleChange} value={formData.city} />
-        <textarea name="message" placeholder="Message" className="w-full p-2 border rounded" onChange={handleChange} value={formData.message} required></textarea>
-
-        <select name="status" className="w-full p-2 border rounded" onChange={handleChange} value={formData.status}>
+        <input
+          type="text"
+          name="name"
+          placeholder="Lead Name"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.name}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.email}
+          required
+        />
+        <input
+          type="text"
+          name="company"
+          placeholder="Company"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.company}
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.phone}
+        />
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.city}
+        />
+        <textarea
+          name="message"
+          placeholder="Message"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.message}
+          required
+        ></textarea>
+        <select
+          name="status"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.status}
+        >
           <option value="HOT">Hot</option>
           <option value="COLD">Cold</option>
           <option value="WARM">Warm</option>
           <option value="SOLD">Sold</option>
           <option value="CALL_BACK">Call Back</option>
         </select>
-
-        <input type="datetime-local" name="callBackTime" className="w-full p-2 border rounded" onChange={handleChange} value={formData.callBackTime} />
-
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded" disabled={loading}>
+        <input
+          type="datetime-local"
+          name="callBackTime"
+          className="w-full p-2 border rounded"
+          onChange={handleChange}
+          value={formData.callBackTime}
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
+        >
           {loading ? "Submitting..." : "Submit Lead"}
         </button>
       </form>
     </div>
   );
 }
- 
