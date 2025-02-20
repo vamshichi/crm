@@ -1,33 +1,35 @@
 import { NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma"; // Adjust the import path if needed
+import prisma from "@/app/lib/prisma";
 
 export async function GET() {
   try {
     const departments = await prisma.department.findMany({
       include: {
-        target: true, // Include target amount
+        target: true,
         employees: {
           include: {
-            leads: true, // Ensure leads are included in the employees relation
+            leads: true, // include leads for each employee
           },
         },
       },
     });
 
-    // Transform the data to calculate totalLeads and soldLeads
     const formattedDepartments = departments.map((dept) => ({
       id: dept.id,
       name: dept.name,
       target: dept.target ? dept.target.amount : null,
       totalLeads: dept.employees.reduce((sum, emp) => sum + emp.leads.length, 0),
       soldLeads: dept.employees.reduce(
-        (sum, emp) => sum + emp.leads.filter((lead) => lead.status === "SOLD").length,
+        (sum, emp) =>
+          sum + emp.leads.filter((lead) => lead.status.toUpperCase() === "SOLD").length,
         0
       ),
+      employees: dept.employees, // Pass along the employees array
     }));
 
-    return NextResponse.json(formattedDepartments);
+    return NextResponse.json(formattedDepartments, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch departments" }, { status: 500 });
+    console.error("Error fetching departments:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

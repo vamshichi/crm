@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
@@ -29,6 +30,7 @@ const DepartmentList = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [expandedDepartments, setExpandedDepartments] = useState<string[]>([]);
+  const router = useRouter(); // Initialize router
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -55,7 +57,6 @@ const DepartmentList = () => {
 
   return (
     <div className="space-y-6">
-      {/* <h2 className="text-3xl font-bold mb-6 text-center">Projects Overview</h2> */}
       {error && <p className="text-red-500 text-center">{error}</p>}
       {departments.length === 0 ? (
         <p className="text-center">No departments found.</p>
@@ -69,7 +70,22 @@ const DepartmentList = () => {
           const soldLeadsPercentage =
             target > 0 ? Math.min(Math.round((dept.soldLeads / target) * 100), 100) : 0;
 
-          // Employee details: If not provided, fallback to empty array.
+          // Calculate hot leads by summing up the hot leads count for each employee.
+          const hotLeads =
+            dept.employees?.reduce((sum, emp) => {
+              const empHot = emp.leads.filter(
+                (lead) => lead.status && lead.status.toUpperCase() === "HOT"
+              ).length;
+              return sum + empHot;
+            }, 0) || 0;
+          const hotLeadsPercentage =
+            target > 0 ? Math.min(Math.round((hotLeads / target) * 100), 100) : 0;
+
+          // Calculate remaining leads: target minus sold leads
+          const remaining = target > 0 ? Math.max(target - dept.soldLeads, 0) : 0;
+          const remainingPercentage =
+            target > 0 ? Math.min(Math.round((remaining / target) * 100), 100) : 0;
+
           const employeeDetails = dept.employees || [];
 
           return (
@@ -88,46 +104,79 @@ const DepartmentList = () => {
                   {expandedDepartments.includes(dept.id) ? "View Less" : "View More"}
                 </button>
               </div>
-              <div className="flex justify-around">
-                {/* Target Circle */}
-                <div className="w-24 h-24">
-                  <CircularProgressbar
-                    value={targetPercentage}
-                    text={target > 0 ? `${dept.target}` : "N/A"}
-                    styles={buildStyles({
-                      textColor: "#1F2937", // Gray-800
-                      pathColor: "#3b82f6", // Blue-500
-                      trailColor: "#e5e7eb", // Gray-200
-                    })}
-                  />
-                  <p className="text-center mt-2 text-sm text-gray-600">Target</p>
-                </div>
-                {/* Total Leads Circle */}
-                <div className="w-24 h-24">
+              <div className="flex justify-around py-10">
+
+                 {/* Total Leads Circle */}
+                 <div className="w-20 h-20">
                   <CircularProgressbar
                     value={totalLeadsPercentage}
                     text={`${dept.totalLeads}`}
                     styles={buildStyles({
                       textColor: "#1F2937",
-                      pathColor: "#f59e0b", // Amber-500
+                      pathColor: "#f59e0b",
                       trailColor: "#e5e7eb",
                     })}
                   />
-                  <p className="text-center mt-2 text-sm text-gray-600">Total Leads</p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Total Leads</p>
                 </div>
-                {/* Sold Leads Circle */}
-                <div className="w-24 h-24">
+
+                {/* Hot Leads Circle */}
+                <div className="w-20 h-20">
+                  <CircularProgressbar
+                    value={hotLeadsPercentage}
+                    text={`${hotLeads}`}
+                    styles={buildStyles({
+                      textColor: "#1F2937",
+                      pathColor: "#ef4444",
+                      trailColor: "#e5e7eb",
+                    })}
+                  />
+                  <p className="text-center mt-2 text-xs text-gray-600">Prospects</p>
+                </div>
+
+                 {/* Sold Leads Circle */}
+                 <div className="w-20 h-20">
                   <CircularProgressbar
                     value={soldLeadsPercentage}
                     text={`${dept.soldLeads}`}
                     styles={buildStyles({
                       textColor: "#1F2937",
-                      pathColor: "#10b981", // Green-500
+                      pathColor: "#10b981",
                       trailColor: "#e5e7eb",
                     })}
                   />
-                  <p className="text-center mt-2 text-sm text-gray-600">Sold Leads</p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Sold Leads</p>
                 </div>
+
+                {/* Remaining Circle */}
+                <div className="w-20 h-20">
+                  <CircularProgressbar
+                    value={remainingPercentage}
+                    text={`${remaining}`}
+                    styles={buildStyles({
+                      textColor: "#1F2937",
+                      pathColor: "#8b5cf6", // Purple
+                      trailColor: "#e5e7eb",
+                    })}
+                  />
+                  <p className="text-center mt-2 text-xs text-gray-600">Remaining</p>
+                </div>
+
+                {/* Target Circle */}
+                <div className="w-20 h-20">
+                  <CircularProgressbar
+                    value={targetPercentage}
+                    text={target > 0 ? `${dept.target}` : "N/A"}
+                    styles={buildStyles({
+                      textColor: "#1F2937",
+                      pathColor: "#3b82f6",
+                      trailColor: "#e5e7eb",
+                    })}
+                  />
+                  <p className="text-center mt-2 text-xs text-gray-600">Target</p>
+                </div>
+                
+                
               </div>
               {/* Expanded Section: Employee Details */}
               {expandedDepartments.includes(dept.id) && (
@@ -145,16 +194,17 @@ const DepartmentList = () => {
                           <th className="border p-2">Total Leads</th>
                           <th className="border p-2">Sold Leads</th>
                           <th className="border p-2">Hot Leads</th>
+                          <th className="border p-2">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employeeDetails.map((emp) => {
                           const totalLeads = emp.leads.length;
                           const soldLeads = emp.leads.filter(
-                            (lead) => lead.status === "SOLD"
+                            (lead) => lead.status && lead.status.toUpperCase() === "SOLD"
                           ).length;
-                          const hotLeads = emp.leads.filter(
-                            (lead) => lead.status === "HOT"
+                          const empHotLeads = emp.leads.filter(
+                            (lead) => lead.status && lead.status.toUpperCase() === "HOT"
                           ).length;
                           return (
                             <tr key={emp.id} className="text-center border-t">
@@ -164,7 +214,15 @@ const DepartmentList = () => {
                                 {soldLeads}
                               </td>
                               <td className="border p-2 text-red-600 font-bold">
-                                {hotLeads}
+                                {empHotLeads}
+                              </td>
+                              <td className="border p-2">
+                                <button
+                                  onClick={() => router.push(`/employee/${emp.id}`)}
+                                  className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+                                >
+                                  View More
+                                </button>
                               </td>
                             </tr>
                           );
