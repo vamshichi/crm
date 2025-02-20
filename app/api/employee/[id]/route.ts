@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-export async function GET(req: Request, context: { params: Record<string, string> }) {
+interface GetParams {
+  params: { id: string };
+}
+
+export async function GET(req: Request, { params }: GetParams) {
   try {
-    const { id } = context.params; // Extract employee ID
+    const { id } = params; // Extract employee ID
 
     if (!id) {
       return NextResponse.json({ error: "Missing employee ID" }, { status: 400 });
