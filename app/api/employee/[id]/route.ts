@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-interface GetParams {
-  params: { id: string };
-}
-
-export async function GET(req: Request, { params }: GetParams) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params; // Extract employee ID
 
