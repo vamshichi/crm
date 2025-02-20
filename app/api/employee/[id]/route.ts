@@ -1,7 +1,10 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
 
@@ -13,7 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       where: { id },
       include: {
         department: true,
-        leads: true, // Include the leads relation
+        leads: true,
       },
     });
 
@@ -21,7 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
 
-    return NextResponse.json(employee, { status: 200 });
+    return NextResponse.json(employee);
   } catch (error) {
     console.error("Error fetching employee:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
