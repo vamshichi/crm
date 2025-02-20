@@ -117,7 +117,7 @@ const DepartmentList = () => {
                       trailColor: "#e5e7eb",
                     })}
                   />
-                  <p className="text-center mt-2 text-xs text-gray-600">Total Leads</p>
+                  <p className="text-center font-bold mt-2 text-xs text-gray-600">Total Leads</p>
                 </div>
 
                 {/* Hot Leads Circle */}
