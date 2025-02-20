@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; // We are using usePathname, not useRouter
-// Removed unused useRouter import
+import { usePathname } from "next/navigation"; // Using usePathname instead of useRouter
 
 export default function LeadForm() {
   const [formData, setFormData] = useState({
@@ -13,7 +12,7 @@ export default function LeadForm() {
     city: "",
     message: "",
     status: "HOT",
-    employeeId: "", // This will be set dynamically from the URL
+    employeeId: "", // Set dynamically from URL
     callBackTime: "",
   });
 
@@ -24,9 +23,9 @@ export default function LeadForm() {
 
   useEffect(() => {
     const pathSegments = pathname.split("/");
-    const employeeId = pathSegments[pathSegments.length - 1]; // Extract the last part of the URL
+    const employeeId = pathSegments[pathSegments.length - 1]; // Extract last part of URL
     if (employeeId) {
-      setFormData((prev) => ({ ...prev, employeeId })); // Set employeeId dynamically
+      setFormData((prev) => ({ ...prev, employeeId })); // Update employeeId dynamically
     }
   }, [pathname]);
 
@@ -65,7 +64,8 @@ export default function LeadForm() {
       } else {
         setMessage(data.error || "Failed to add lead.");
       }
-    } catch (_error) {
+    } catch (error) {
+      console.error("Error adding lead:", error);
       setMessage("An error occurred.");
     } finally {
       setLoading(false);

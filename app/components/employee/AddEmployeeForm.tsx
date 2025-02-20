@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 type Department = {
   id: string;
@@ -16,7 +15,6 @@ export default function EmployeeForm() {
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [message, setMessage] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -43,7 +41,7 @@ export default function EmployeeForm() {
     });
 
     if (response.ok) {
-        setMessage("New employee added"); // Redirect after success
+      setMessage("New employee added");
     } else {
       setMessage("Failed to create employee. Please try again.");
     }

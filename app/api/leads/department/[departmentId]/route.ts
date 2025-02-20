@@ -8,7 +8,10 @@ export async function GET(req: Request, { params }: { params: { departmentId: st
     });
 
     return NextResponse.json({ count });
-  } catch (_error) {
+  } catch (error) {
+    console.error("Error fetching department lead count:", error);
     return NextResponse.json({ error: "Failed to fetch department lead count" }, { status: 500 });
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -8,7 +8,9 @@ export async function GET(req: Request, { params }: { params: { employeeId: stri
     });
 
     return NextResponse.json({ count });
-  } catch (_error) {
+  } catch (error) { // <-- Use 'error' instead of '_error'
+    console.error("Error fetching employee lead count:", error);
     return NextResponse.json({ error: "Failed to fetch employee lead count" }, { status: 500 });
   }
 }
+
