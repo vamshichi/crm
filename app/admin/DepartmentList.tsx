@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
+import CircularProgress from "@/app/components/ui/CircularProgress"; // Adjust the path as needed
 
 interface Lead {
   id: string;
@@ -43,7 +42,6 @@ const DepartmentList = () => {
         setError((err as Error).message);
       }
     };
-
     fetchDepartments();
   }, []);
 
@@ -69,19 +67,14 @@ const DepartmentList = () => {
           const target = dept.target || 0;
           const targetPercentage = target > 0 ? 100 : 0;
           const totalLeadsPercentage =
-            target > 0
-              ? Math.min(Math.round((dept.totalLeads / target) * 100), 100)
-              : 0;
+            target > 0 ? Math.min(Math.round((dept.totalLeads / target) * 100), 100) : 0;
           const soldLeadsPercentage =
-            target > 0
-              ? Math.min(Math.round((dept.soldLeads / target) * 100), 100)
-              : 0;
+            target > 0 ? Math.min(Math.round((dept.soldLeads / target) * 100), 100) : 0;
           // Calculate hot leads across employees (case-insensitive)
           const hotLeads =
             dept.employees?.reduce((sum, emp) => {
               const empHot = emp.leads.filter(
-                (lead) =>
-                  lead.status && lead.status.toUpperCase() === "HOT"
+                (lead) => lead.status && lead.status.toUpperCase() === "HOT"
               ).length;
               return sum + empHot;
             }, 0) || 0;
@@ -116,78 +109,43 @@ const DepartmentList = () => {
               <div className="flex justify-around py-10">
                 {/* Target Circle */}
                 <div className="w-20 h-20">
-                  <CircularProgressbar
+                  <CircularProgress
                     value={targetPercentage}
                     text={target > 0 ? `${dept.target}` : "N/A"}
-                    styles={buildStyles({
-                      textColor: "#1F2937",
-                      pathColor: "#3b82f6",
-                      trailColor: "#e5e7eb",
-                    })}
                   />
-                  <p className="text-center mt-2 text-xs text-gray-600">
-                    Target
-                  </p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Target</p>
                 </div>
                 {/* Total Leads Circle */}
                 <div className="w-20 h-20">
-                  <CircularProgressbar
+                  <CircularProgress
                     value={totalLeadsPercentage}
                     text={`${dept.totalLeads}`}
-                    styles={buildStyles({
-                      textColor: "#1F2937",
-                      pathColor: "#f59e0b",
-                      trailColor: "#e5e7eb",
-                    })}
                   />
-                  <p className="text-center mt-2 text-xs text-gray-600">
-                    Total Leads
-                  </p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Total Leads</p>
                 </div>
                 {/* Sold Leads Circle */}
                 <div className="w-20 h-20">
-                  <CircularProgressbar
+                  <CircularProgress
                     value={soldLeadsPercentage}
                     text={`${dept.soldLeads}`}
-                    styles={buildStyles({
-                      textColor: "#1F2937",
-                      pathColor: "#10b981",
-                      trailColor: "#e5e7eb",
-                    })}
                   />
-                  <p className="text-center mt-2 text-xs text-gray-600">
-                    Sold Leads
-                  </p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Sold Leads</p>
                 </div>
                 {/* Hot Leads Circle */}
                 <div className="w-20 h-20">
-                  <CircularProgressbar
+                  <CircularProgress
                     value={hotLeadsPercentage}
                     text={`${hotLeads}`}
-                    styles={buildStyles({
-                      textColor: "#1F2937",
-                      pathColor: "#ef4444",
-                      trailColor: "#e5e7eb",
-                    })}
                   />
-                  <p className="text-center mt-2 text-xs text-gray-600">
-                    Prospects
-                  </p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Prospects</p>
                 </div>
                 {/* Remaining Circle */}
                 <div className="w-20 h-20">
-                  <CircularProgressbar
+                  <CircularProgress
                     value={remainingPercentage}
                     text={`${remaining}`}
-                    styles={buildStyles({
-                      textColor: "#1F2937",
-                      pathColor: "#8b5cf6", // Purple
-                      trailColor: "#e5e7eb",
-                    })}
                   />
-                  <p className="text-center mt-2 text-xs text-gray-600">
-                    Remaining
-                  </p>
+                  <p className="text-center mt-2 text-xs text-gray-600">Remaining</p>
                 </div>
               </div>
               {isExpanded && (
@@ -205,18 +163,10 @@ const DepartmentList = () => {
                         <thead className="bg-gray-200">
                           <tr>
                             <th className="border p-2 text-left">Employee</th>
-                            <th className="border p-2 text-center">
-                              Total Leads
-                            </th>
-                            <th className="border p-2 text-center">
-                              Sold Leads
-                            </th>
-                            <th className="border p-2 text-center">
-                              Hot Leads
-                            </th>
-                            <th className="border p-2 text-center">
-                              Actions
-                            </th>
+                            <th className="border p-2 text-center">Total Leads</th>
+                            <th className="border p-2 text-center">Sold Leads</th>
+                            <th className="border p-2 text-center">Hot Leads</th>
+                            <th className="border p-2 text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -235,9 +185,7 @@ const DepartmentList = () => {
                             return (
                               <tr key={emp.id} className="hover:bg-gray-50">
                                 <td className="border p-2">{emp.name}</td>
-                                <td className="border p-2 text-center">
-                                  {totalLeads}
-                                </td>
+                                <td className="border p-2 text-center">{totalLeads}</td>
                                 <td className="border p-2 text-center text-green-600 font-bold">
                                   {soldLeads}
                                 </td>
@@ -246,9 +194,7 @@ const DepartmentList = () => {
                                 </td>
                                 <td className="border p-2 text-center">
                                   <button
-                                    onClick={() =>
-                                      router.push(`/employee/${emp.id}`)
-                                    }
+                                    onClick={() => router.push(`/employee/${emp.id}`)}
                                     className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
                                   >
                                     View More
