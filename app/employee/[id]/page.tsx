@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import EmployeeLeads from '@/app/components/leads/getleads';
 import LeadForm from '@/app/components/employee/LeadForm';
 
-export default async function EmployeePage({ params }: { params: { id: string } }) {
+export default async function EmployeePage(params : { id: string }) {
   if (!params.id) {
     return notFound();
   }
