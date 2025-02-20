@@ -3,10 +3,10 @@ import prisma from "@/app/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = context.params;
+    const id = params.id;
 
     if (!id) {
       return NextResponse.json({ error: "Missing employee ID" }, { status: 400 });
