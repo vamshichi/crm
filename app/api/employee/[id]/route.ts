@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = params; // Extract employee ID
+    const { id } = params;
 
     if (!id) {
       return NextResponse.json({ error: "Missing employee ID" }, { status: 400 });
