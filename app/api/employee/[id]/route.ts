@@ -1,18 +1,21 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-export async function GET(req: NextRequest, { params }: any) {
+export async function GET(req: NextRequest, context: unknown): Promise<NextResponse> {
+  // Cast context to our expected shape
+  const { params } = context as { params: { id: string } };
+
   try {
-    const { employeeId } = params;
-    if (!employeeId) {
+    const { id } = params;
+    if (!id) {
       return NextResponse.json({ error: "Missing employee ID" }, { status: 400 });
     }
 
     const employee = await prisma.employee.findUnique({
-      where: { id: employeeId },
+      where: { id },
       include: {
         department: true,
-        leads: true,
+        leads: true, // Include the leads relation
       },
     });
 
