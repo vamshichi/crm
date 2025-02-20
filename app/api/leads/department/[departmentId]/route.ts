@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-export async function GET(req: Request, { params }: { params: { departmentId: string } }) {
+export async function GET() {
   try {
-    const count = await prisma.lead.count({
-      where: { employee: { departmentId: params.departmentId } },
-    });
-
-    return NextResponse.json({ count });
+    const leadCount = await prisma.lead.count({});
+    return NextResponse.json({ count: leadCount }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching department lead count:", error);
-    return NextResponse.json({ error: "Failed to fetch department lead count" }, { status: 500 });
+    console.error("Error fetching leads count:", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
