@@ -34,7 +34,7 @@ const AdminForm: React.FC = () => {
         setEmail("");
         setPassword("");
       }
-    } catch (err) {
+    } catch {
       setError("Error submitting form");
     } finally {
       setLoading(false);
