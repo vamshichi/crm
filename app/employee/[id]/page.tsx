@@ -4,16 +4,15 @@ import { notFound } from 'next/navigation';
 import EmployeeLeads from '@/app/components/leads/getleads';
 import LeadForm from '@/app/components/employee/LeadForm';
 
-interface EmployeePageProps {
-  params: { id?: string };
-}
-
-export default async function EmployeePage({ params }: EmployeePageProps) {
-  if (!params?.id) {
+export default async function EmployeePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  if (!params.id) {
     return notFound();
   }
 
-  // Fetch basic employee info (you can include leads here if you want SSR for that, but here we'll fetch leads client-side)
   const employee = await prisma.employee.findUnique({
     where: { id: params.id },
     include: { department: true },
@@ -38,7 +37,6 @@ export default async function EmployeePage({ params }: EmployeePageProps) {
         <strong>Project:</strong> {employee.department?.name || 'No department'}
       </p>
       <LeadForm />
-      {/* Render the EmployeeLeads component */}
       <EmployeeLeads employeeId={employee.id} />
     </div>
   );
