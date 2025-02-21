@@ -43,7 +43,7 @@ const AdminForm: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">Add New Admin</h2>
+      <h2 className="text-2xl font-semibold mb-4">Add New Admin.</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-1">Name (optional)</label>
