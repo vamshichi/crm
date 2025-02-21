@@ -16,6 +16,15 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     <aside className="w-64 bg-blue-900 text-white p-6 flex flex-col min-h-screen fixed">
       <h2 className="text-xl font-bold mb-16 text-center">Admin Panel</h2>
 
+      <button
+        className={`py-2 px-4 mb-2 rounded w-full text-left ${
+          activeTab === "add-admin" ? "bg-blue-700" : ""
+        }`}
+        onClick={() => setActiveTab("add-admin")}
+      >
+        Add Admin
+      </button>
+
       {/* Add Employee */}
       <button
         className={`py-2 px-4 mb-2 rounded w-full text-left ${

@@ -7,6 +7,7 @@ import AddEmployee from "@/app/components/employee/AddEmployeeForm";
 import AddDepartment from "@/app/components/admin/department"; // Component to add department
 import AddTarget from "@/app/components/admin/AddTarget";
 import DepartmentList from "@/app/admin/DepartmentList";
+import AdminForm from "../components/admin/adminform";
 
 export default function AdminPage() {
   // Define activeTab values. You can adjust these values as needed.
@@ -15,6 +16,12 @@ export default function AdminPage() {
   // Render main content based on the active tab
   const renderContent = () => {
     switch (activeTab) {
+      case "add-admin":
+        return (
+          <div className="mb-6">
+            <AdminForm />
+          </div>
+        );
       case "add-employee":
         return (
           <div className="mb-6">
