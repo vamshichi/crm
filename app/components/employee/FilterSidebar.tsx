@@ -54,7 +54,7 @@ export default function EmployeeSidebar({
         className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded mt-auto"
         onClick={() => {
           localStorage.removeItem("isAuthenticated");
-          router.push("/employee-login");
+          router.push("/");
         }}
       >
         Logout
