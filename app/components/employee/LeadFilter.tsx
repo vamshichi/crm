@@ -9,6 +9,8 @@ interface LeadFilterProps {
   onStatusChange: (status: string | null) => void;
   onFromDateChange: (date: string | null) => void;
   onToDateChange: (date: string | null) => void;
+  onWeekFilter: () => void; // Function to filter by the current week
+  onExport: () => void; // Function to export data to Excel
 }
 
 const statuses = ["HOT", "COLD", "WARM", "SOLD", "CALL_BACK"];
@@ -20,6 +22,8 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
   onStatusChange,
   onFromDateChange,
   onToDateChange,
+  onWeekFilter,
+  onExport,
 }) => {
   return (
     <div className="mb-4 flex flex-wrap gap-2 items-center">
@@ -35,6 +39,14 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
           {status}
         </button>
       ))}
+
+      {/* Week Filter */}
+      <button
+        onClick={onWeekFilter}
+        className="px-4 py-2 rounded-md border bg-green-500 text-white"
+      >
+        This Week
+      </button>
 
       {/* From Date Picker */}
       <div className="flex items-center gap-2">
@@ -57,6 +69,14 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
           className="px-4 py-2 border rounded-md"
         />
       </div>
+
+      {/* Export Button */}
+      <button
+        onClick={onExport}
+        className="px-4 py-2 rounded-md border bg-yellow-500 text-white"
+      >
+        Export to Excel
+      </button>
     </div>
   );
 };

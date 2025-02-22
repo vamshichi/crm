@@ -1,7 +1,7 @@
-'use client'; // This makes it a Client Component
+'use client';
 
 import { useState } from 'react';
-import EmployeeSidebar from './FilterSidebar';
+import EmployeeSidebar from './FilterSidebar'; // Ensure correct import
 import EmployeeLeads from '../leads/getleads';
 import LeadForm from './LeadForm';
 import DepartmentList from './DepartmentList';
@@ -17,25 +17,24 @@ interface EmployeeProps {
 }
 
 export default function EmployeeDashboard({ employee }: EmployeeProps) {
-  const [activeTab, setActiveTab] = useState("profile"); // Default to profile
+  const [activeTab, setActiveTab] = useState("dashboard"); // Default to "dashboard"
 
   return (
     <div className="flex">
       <EmployeeSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className="ml-64 p-6 flex-grow">
         {activeTab === "dashboard" && (
-        <div>
-          <div className="bg-white shadow-md p-6 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4">Employee Profile</h2>
-            <p><strong>Name:</strong> {employee.name}</p>
-            <p><strong>Email:</strong> {employee.email}</p>
-            <p><strong>Role:</strong> {employee.role}</p>
-            <p><strong>Project:</strong> {employee.department?.name || 'No department assigned'}</p>
-          </div>
-          <EmployeeLeads employeeId={employee.id} />
+          <div>
+            <div className="bg-white shadow-md p-6 rounded-lg">
+              <h2 className="text-2xl font-semibold mb-4">Employee Profile</h2>
+              <p><strong>Name:</strong> {employee.name}</p>
+              <p><strong>Email:</strong> {employee.email}</p>
+              <p><strong>Role:</strong> {employee.role}</p>
+              <p><strong>Project:</strong> {employee.department?.name || 'No department assigned'}</p>
+            </div>
+            <EmployeeLeads employeeId={employee.id} />
           </div>
         )}
-        {/* {activeTab === "my-leads" && <EmployeeLeads employeeId={employee.id} />} */}
         {activeTab === "add-lead" && <LeadForm />}
         {activeTab === "project-details" && <DepartmentList employeeId={employee.id} />}
       </main>
