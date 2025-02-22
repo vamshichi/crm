@@ -49,9 +49,17 @@ export default function EmployeeSidebar({
 
       <div className="flex-grow" />
 
+      {/* Back Button */}
+      <button
+        className="py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded mb-2"
+        onClick={() => router.back()}
+      >
+        Back
+      </button>
+
       {/* Logout Button */}
       <button
-        className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded mt-auto"
+        className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded"
         onClick={() => {
           localStorage.removeItem("isAuthenticated");
           router.push("/");
