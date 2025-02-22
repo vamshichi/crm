@@ -32,7 +32,7 @@ interface DepartmentListProps {
 const DepartmentList = ({ employeeId }: DepartmentListProps) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+//   const router = useRouter();
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -62,7 +62,7 @@ const DepartmentList = ({ employeeId }: DepartmentListProps) => {
         </div>
       )}
       {departments.length === 0 && !error ? (
-        <div className="text-gray-500 text-center p-4">No department found.</div>
+        <div className="text-gray-500 text-center p-4">Loding.</div>
       ) : (
         departments.map((dept) => (
           <div
