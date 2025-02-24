@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { UserPlus, Users, FolderPlus, Target, LayoutDashboard, ArrowLeft, LogOut } from "lucide-react";
 
 interface SidebarProps {
   activeTab: string;
@@ -11,74 +13,81 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   const router = useRouter();
 
   return (
-    <aside className="w-64 bg-blue-900 text-white p-6 flex flex-col min-h-screen fixed">
-      <h2 className="text-xl font-bold mb-16 text-center">Admin Panel</h2>
+    <aside className="w-64 bg-blue-900 text-white p-2 flex flex-col min-h-screen fixed">
+      {/* Logo at the Top */}
+      <div className="flex justify-center mb-2">
+        <Image src="/maxpo.png" alt="Logo" height={150} width={160} className="object-contain" />
+      </div>
 
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full text-left ${
-          activeTab === "add-admin" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("add-admin")}
-      >
-        Add Admin
-      </button>
+      {/* Sidebar Buttons (Moved Up) */}
+      <nav className="flex flex-col gap-2 mt-1">
+        <button
+          className={`py-2 px-3 rounded w-full text-left flex items-center gap-2 ${
+            activeTab === "add-admin" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => setActiveTab("add-admin")}
+        >
+          <UserPlus size={18} /> Add Admin
+        </button>
 
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full text-left ${
-          activeTab === "add-employee" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("add-employee")}
-      >
-        Add Employee
-      </button>
+        <button
+          className={`py-2 px-3 rounded w-full text-left flex items-center gap-2 ${
+            activeTab === "add-employee" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => setActiveTab("add-employee")}
+        >
+          <Users size={18} /> Add Employee
+        </button>
 
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full text-left ${
-          activeTab === "set-department-target" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("set-department-target")}
-      >
-        Add new project
-      </button>
+        <button
+          className={`py-2 px-3 rounded w-full text-left flex items-center gap-2 ${
+            activeTab === "set-department-target" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => setActiveTab("set-department-target")}
+        >
+          <FolderPlus size={18} /> Add New Project
+        </button>
 
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full text-left ${
-          activeTab === "set-target" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("set-target")}
-      >
-        Set Targets
-      </button>
+        <button
+          className={`py-2 px-3 rounded w-full text-left flex items-center gap-2 ${
+            activeTab === "set-target" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => setActiveTab("set-target")}
+        >
+          <Target size={18} /> Set Targets
+        </button>
 
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full text-left ${
-          activeTab === "dashboard" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("dashboard")}
-      >
-        Dashboard
-      </button>
+        <button
+          className={`py-2 px-3 rounded w-full text-left flex items-center gap-2 ${
+            activeTab === "dashboard" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => setActiveTab("dashboard")}
+        >
+          <LayoutDashboard size={18} /> Dashboard
+        </button>
+      </nav>
 
-      <div className="flex-grow" />
+      {/* Removed excessive flex-grow to prevent pushing buttons down */}
+      <div className="mt-auto flex flex-col gap-2">
+        {/* Back Button */}
+        <button
+          className="py-2 px-3 bg-gray-600 hover:bg-gray-700 rounded flex items-center gap-2"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft size={18} /> Back
+        </button>
 
-      {/* Back Button */}
-      <button
-        className="py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded mb-2"
-        onClick={() => router.back()}
-      >
-        Back
-      </button>
-
-      {/* Logout Button */}
-      <button
-        className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded"
-        onClick={() => {
-          localStorage.removeItem("isAuthenticated");
-          router.push("/");
-        }}
-      >
-        Logout
-      </button>
+        {/* Logout Button */}
+        <button
+          className="py-2 px-3 bg-red-600 hover:bg-red-700 rounded flex items-center gap-2"
+          onClick={() => {
+            localStorage.removeItem("isAuthenticated");
+            router.push("/");
+          }}
+        >
+          <LogOut size={18} /> Logout
+        </button>
+      </div>
     </aside>
   );
 }
