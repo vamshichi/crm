@@ -1,4 +1,4 @@
-import prisma from '@/app/lib/prisma';
+import {prisma } from '@/app/lib/prisma';
 import { notFound } from 'next/navigation';
 import EmployeeDashboard from '@/app/components/employee/EmployeeDashboard';
 

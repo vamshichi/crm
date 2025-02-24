@@ -29,6 +29,7 @@
     "react": "^19.0.0",
     "react-datepicker": "^8.1.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
