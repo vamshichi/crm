@@ -8,6 +8,7 @@ import AddDepartment from "@/app/components/admin/department"; // Component to a
 import AddTarget from "@/app/components/admin/AddTarget";
 import DepartmentList from "@/app/admin/DepartmentList";
 import AdminForm from "../components/admin/adminform";
+import ManagerForm from "../components/managers/addManagerForm";
 
 export default function AdminPage() {
   // Define activeTab values. You can adjust these values as needed.
@@ -20,6 +21,12 @@ export default function AdminPage() {
         return (
           <div className="mb-6">
             <AdminForm />
+          </div>
+        );
+        case "add-manager":
+        return (
+          <div className="mb-6">
+            <ManagerForm />
           </div>
         );
       case "add-employee":
@@ -65,6 +72,7 @@ export default function AdminPage() {
               <h2 className="text-xl font-semibold mb-2">Set Department Targets</h2>
               <AddTarget />
             </div> */}
+            {/* <ManagerForm /> */}
             <div className="p-4 border rounded-lg shadow-md bg-white">
               <h2 className="text-xl font-semibold mb-4">Projects Overview</h2>
               <DepartmentList />

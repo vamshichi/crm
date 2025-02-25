@@ -25,6 +25,15 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
 
       <button
         className={`py-2 px-4 mb-2 rounded w-full text-left ${
+          activeTab === "add-manager" ? "bg-blue-700" : ""
+        }`}
+        onClick={() => setActiveTab("add-manager")}
+      >
+        Add Manager
+      </button>
+
+      <button
+        className={`py-2 px-4 mb-2 rounded w-full text-left ${
           activeTab === "add-employee" ? "bg-blue-700" : ""
         }`}
         onClick={() => setActiveTab("add-employee")}

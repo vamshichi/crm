@@ -15,6 +15,16 @@ model Admin {
   createdAt DateTime @default(now())
 }
 
+model Manager {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String     @unique
+  password     String
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String     @db.ObjectId
+  createdAt    DateTime   @default(now())
+}
+
 
 model Employee {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
@@ -48,6 +58,7 @@ model Department {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
   name      String     @unique
   employees Employee[]
+  managers  Manager[]
   target    Target?
 }
 

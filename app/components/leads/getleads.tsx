@@ -192,9 +192,9 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     City
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Designaction
-                  </th>
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  designaction
+                  </th> */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Note
                   </th>
@@ -214,7 +214,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                     <td className="px-6 py-4 whitespace-nowrap">{lead.company}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{lead.phone}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{lead.city}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.designaction}</td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap">{lead.designaction}</td> */}
                     <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{new Date(lead.callBackTime).toLocaleString()}</td>
