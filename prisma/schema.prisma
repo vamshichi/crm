@@ -35,6 +35,7 @@ model Lead {
   company      String
   phone        String
   city         String
+  designaction String?
   message      String
   status       LeadStatus
   callBackTime DateTime?

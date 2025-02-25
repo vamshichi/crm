@@ -1,107 +1,133 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
-import LeadFilter from "@/app/components/employee/LeadFilter"; // Your filter component
-import * as XLSX from "xlsx"; // Import for Excel export
+import type React from "react"
+import { useEffect, useState } from "react"
+import LeadFilter from "@/app/components/employee/LeadFilter"
+import * as XLSX from "xlsx"
 
 interface Lead {
-  id: string;
-  name: string;
-  email: string;
-  status: string;
-  createdAt: string;
+  id: string
+  name: string
+  email: string
+  status: string
+  createdAt: string
+  city: string
+  message: string
+  designaction: string
+  phone: string
+  company: string
+  callBackTime: string
 }
 
 interface EmployeeLeadsProps {
-  employeeId: string;
+  employeeId: string
 }
 
 const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [leads, setLeads] = useState<Lead[]>([])
+  const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
-  // Filters
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [fromDate, setFromDate] = useState<string | null>(null);
-  const [toDate, setToDate] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
+  const [fromDate, setFromDate] = useState<string | null>(null)
+  const [toDate, setToDate] = useState<string | null>(null)
 
-  // Fetch leads data
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const res = await fetch(`/api/employee-leads?employeeId=${employeeId}`);
+        const res = await fetch(`/api/employee-leads?employeeId=${employeeId}`)
         if (!res.ok) {
-          throw new Error("Failed to fetch leads");
+          throw new Error("Failed to fetch leads")
         }
-        const data = await res.json();
-        setLeads(data);
-        setFilteredLeads(data);
-        setLoading(false);
+        const data = await res.json()
+        setLeads(data)
+        setFilteredLeads(data)
+        setLoading(false)
       } catch (err) {
-        setError((err as Error).message);
-        setLoading(false);
+        setError((err as Error).message)
+        setLoading(false)
       }
-    };
-    fetchLeads();
-  }, [employeeId]);
+    }
+    fetchLeads()
+  }, [employeeId])
 
-  // Apply filters
   useEffect(() => {
-    let updatedLeads = leads;
+    let updatedLeads = leads
 
     if (selectedStatus) {
-      updatedLeads = updatedLeads.filter((lead) => lead.status.toLowerCase() === selectedStatus.toLowerCase());
+      updatedLeads = updatedLeads.filter((lead) => lead.status.toLowerCase() === selectedStatus.toLowerCase())
     }
 
     if (fromDate) {
-      updatedLeads = updatedLeads.filter((lead) => new Date(lead.createdAt) >= new Date(fromDate));
+      updatedLeads = updatedLeads.filter((lead) => new Date(lead.createdAt) >= new Date(fromDate))
     }
 
     if (toDate) {
-      updatedLeads = updatedLeads.filter((lead) => new Date(lead.createdAt) <= new Date(toDate));
+      updatedLeads = updatedLeads.filter((lead) => new Date(lead.createdAt) <= new Date(toDate))
     }
 
-    setFilteredLeads(updatedLeads);
-  }, [selectedStatus, fromDate, toDate, leads]);
+    setFilteredLeads(updatedLeads)
+  }, [selectedStatus, fromDate, toDate, leads])
 
-  // Count Calculation
-  const totalLeads = filteredLeads.length;
-  const hotLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "hot").length;
-  const soldLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "sold").length;
-  const target = 50; // Example target, change as needed
-  const remainingTarget = target > soldLeads ? target - soldLeads : 0;
+  const totalLeads = filteredLeads.length
+  const hotLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "hot").length
+  const soldLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "sold").length
+  const target = 50
+  const remainingTarget = target > soldLeads ? target - soldLeads : 0
 
-  // ✅ Function to filter leads for the current week
   const handleWeekFilter = () => {
-    const today = new Date();
-    const firstDayOfWeek = new Date(today);
-    firstDayOfWeek.setDate(today.getDate() - today.getDay()); // Start of the week (Sunday)
-    const lastDayOfWeek = new Date(firstDayOfWeek);
-    lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6); // End of the week (Saturday)
+    const today = new Date()
+    const firstDayOfWeek = new Date(today)
+    firstDayOfWeek.setDate(today.getDate() - today.getDay())
+    const lastDayOfWeek = new Date(firstDayOfWeek)
+    lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6)
 
-    setFromDate(firstDayOfWeek.toISOString().split("T")[0]);
-    setToDate(lastDayOfWeek.toISOString().split("T")[0]);
-  };
+    setFromDate(firstDayOfWeek.toISOString().split("T")[0])
+    setToDate(lastDayOfWeek.toISOString().split("T")[0])
+  }
 
-  // ✅ Function to export filtered leads to an Excel file
   const handleExportToExcel = () => {
     if (filteredLeads.length === 0) {
-      alert("No leads available to export.");
-      return;
+      alert("No leads available to export.")
+      return
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(filteredLeads);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+    const worksheet = XLSX.utils.json_to_sheet(filteredLeads)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Leads")
 
-    XLSX.writeFile(workbook, "leads.xlsx");
-  };
+    XLSX.writeFile(workbook, "leads.xlsx")
+  }
+
+  const handleImportLeads = async (file: File) => {
+    try {
+      const response = await fetch("/api/leads/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: file,
+      })
+
+      if (response.ok) {
+        alert("Leads imported successfully!")
+        // Refresh leads after import
+        const res = await fetch(`/api/employee-leads?employeeId=${employeeId}`)
+        if (res.ok) {
+          const data = await res.json()
+          setLeads(data)
+          setFilteredLeads(data)
+        }
+      } else {
+        alert("Error importing leads")
+      }
+    } catch (error) {
+      console.error("Error importing leads:", error)
+      alert("Error importing leads")
+    }
+  }
 
   return (
     <div className="p-10 mt-10 bg-white shadow-lg rounded-lg">
-      {/* Display Counts */}
       <div className="grid grid-cols-5 gap-4 mt-4 p-20">
         <div className="text-center p-4 bg-gray-100 rounded-lg">
           <p className="text-lg font-bold">{totalLeads}</p>
@@ -126,19 +152,19 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
       </div>
       <h2 className="text-2xl font-semibold mb-4">Employee Leads</h2>
 
-      {/* Filter Component */}
       <LeadFilter
         selectedStatus={selectedStatus}
         fromDate={fromDate}
         toDate={toDate}
+        employeeId={employeeId}
         onStatusChange={setSelectedStatus}
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         onWeekFilter={handleWeekFilter}
         onExport={handleExportToExcel}
+        onFileImport={handleImportLeads}
       />
 
-      {/* Lead List */}
       <div className="mt-6">
         {loading ? (
           <p>Loading leads...</p>
@@ -147,32 +173,61 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
         ) : filteredLeads.length === 0 ? (
           <p className="text-gray-500">No leads found.</p>
         ) : (
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Email</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredLeads.map((lead) => (
-            <tr key={lead.id} className="border-t">
-              <td className="px-4 py-2">{lead.name}</td>
-              <td className="px-4 py-2">{lead.email}</td>
-              <td className="px-4 py-2">{lead.status}</td>
-              <td className="px-4 py-2">
-                {new Date(lead.createdAt).toLocaleDateString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Company
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    City
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Designaction
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Note
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Call Back Time
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredLeads.map((lead) => (
+                  <tr key={lead.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.company}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.phone}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.city}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.designaction}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{new Date(lead.callBackTime).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EmployeeLeads;
+export default EmployeeLeads
+
