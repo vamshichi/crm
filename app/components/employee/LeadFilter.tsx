@@ -17,7 +17,19 @@ interface LeadFilterProps {
   onFileImport: (file: File) => void
 }
 
-const statuses = ["HOT", "COLD", "WARM", "SOLD", "CALL_BACK"]
+const statuses = ["HOT", "COLD", "WARM", "SOLD", "CALL_BACK"] as const
+type Status = (typeof statuses)[number]
+
+interface ImportedLead {
+  Name: string
+  Email: string
+  Company: string
+  Phone: string
+  City: string
+  Message: string
+  Status: Status
+  "Call Back Time": string
+}
 
 const LeadFilter: React.FC<LeadFilterProps> = ({
   selectedStatus,
@@ -45,9 +57,9 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
       const workbook = XLSX.read(data, { type: "binary" })
       const sheetName = workbook.SheetNames[0]
       const sheet = workbook.Sheets[sheetName]
-      const jsonData = XLSX.utils.sheet_to_json(sheet)
+      const jsonData = XLSX.utils.sheet_to_json<ImportedLead>(sheet)
 
-      const formattedData = jsonData.map((lead: any) => ({
+      const formattedData = jsonData.map((lead) => ({
         name: lead.Name,
         email: lead.Email,
         company: lead.Company,
@@ -71,8 +83,8 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
 
   const downloadTemplate = () => {
     const templateData = [
-      ["Name", "Email", "Company", "Phone", "City","designaction", "Message", "Status", "Call Back Time"],
-      ["John Doe", "john@example.com", "ABC Corp", "1234567890", "New York","it", "Interested", "HOT", "2025-02-24T10:00"],
+      ["Name", "Email", "Company", "Phone", "City", "Message", "Status", "Call Back Time"],
+      ["John Doe", "john@example.com", "ABC Corp", "1234567890", "New York", "Interested", "HOT", "2025-02-24T10:00"],
     ]
 
     const worksheet = XLSX.utils.aoa_to_sheet(templateData)
@@ -101,8 +113,11 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
       </button>
 
       <div className="flex items-center gap-2">
-        <label className="text-sm font-semibold">From:</label>
+        <label htmlFor="from-date" className="text-sm font-semibold">
+          From:
+        </label>
         <input
+          id="from-date"
           type="date"
           value={fromDate || ""}
           onChange={(e) => onFromDateChange(e.target.value || null)}
@@ -111,8 +126,11 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <label className="text-sm font-semibold">To:</label>
+        <label htmlFor="to-date" className="text-sm font-semibold">
+          To:
+        </label>
         <input
+          id="to-date"
           type="date"
           value={toDate || ""}
           onChange={(e) => onToDateChange(e.target.value || null)}
