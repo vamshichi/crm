@@ -1,5 +1,5 @@
 {
-  "name": "minicrm",
+  "name": "crm",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -20,10 +20,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
-<<<<<<< HEAD
-=======
     "framer-motion": "^12.4.7",
->>>>>>> d6f9d1e1feefd3d6976a2c08f0b45c8dbbd38d64
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.475.0",
     "mongodb": "^6.13.1",
@@ -32,11 +29,7 @@
     "react": "^19.0.0",
     "react-datepicker": "^8.1.0",
     "react-dom": "^19.0.0",
-<<<<<<< HEAD
     "react-toastify": "^11.0.5",
-=======
-    "react-hot-toast": "^2.5.2",
->>>>>>> d6f9d1e1feefd3d6976a2c08f0b45c8dbbd38d64
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
