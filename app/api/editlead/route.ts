@@ -1,0 +1,76 @@
+import { LeadStatus, PrismaClient } from "@prisma/client"
+import { type NextRequest, NextResponse } from "next/server"
+
+const prisma = new PrismaClient()
+
+export async function PUT(request: NextRequest) {
+  try {
+    const data = await request.json()
+
+    // Ensure required fields are present
+    if (!data.id) {
+      return NextResponse.json({ error: "Lead ID is required" }, { status: 400 })
+    }
+
+    // Define a type for the updateable fields of a Lead
+    type LeadUpdateData = {
+      name?: string
+      email?: string
+      company?: string
+      phone?: string
+      city?: string
+      designaction?: string | null
+      message?: string
+      status?: LeadStatus
+      callBackTime?: Date | null
+    }
+
+    const updateData: LeadUpdateData = {}
+
+    // Prepare the data for update
+    // const updateData: any = {}
+
+    // Only include fields that are provided in the request
+    if (data.name !== undefined) updateData.name = data.name
+    if (data.email !== undefined) updateData.email = data.email
+    if (data.company !== undefined) updateData.company = data.company
+    if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.city !== undefined) updateData.city = data.city
+    if (data.designaction !== undefined) updateData.designaction = data.designaction
+    if (data.message !== undefined) updateData.message = data.message
+
+    // Handle status update - ensure it's a valid enum value
+    if (data.status !== undefined) {
+      // Convert status to uppercase to match enum values
+      const statusValue = data.status.toUpperCase()
+
+      // Validate that the status is a valid LeadStatus enum value
+      if (Object.values(LeadStatus).includes(statusValue as LeadStatus)) {
+        updateData.status = statusValue as LeadStatus
+      } else {
+        return NextResponse.json({ error: "Invalid status value" }, { status: 400 })
+      }
+    }
+
+    // Handle callBackTime if provided
+    if (data.callBackTime !== undefined) {
+      updateData.callBackTime = new Date(data.callBackTime)
+    }
+
+    // Update the lead in the database
+    const updatedLead = await prisma.lead.update({
+      where: {
+        id: data.id,
+      },
+      data: updateData,
+    })
+
+    return NextResponse.json(updatedLead)
+  } catch (error) {
+    console.error("Error updating lead:", error)
+    return NextResponse.json({ error: "Failed to update lead" }, { status: 500 })
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
