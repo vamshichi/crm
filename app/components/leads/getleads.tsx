@@ -1,8 +1,8 @@
 "use client"
 
+import LeadFilter from "@/app/components/employee/LeadFilter"
 import type React from "react"
 import { useEffect, useState } from "react"
-import LeadFilter from "@/app/components/employee/LeadFilter"
 import * as XLSX from "xlsx"
 
 interface Lead {
@@ -13,7 +13,7 @@ interface Lead {
   createdAt: string
   city: string
   message: string
-  designaction: string
+  designation: string
   phone: string
   company: string
   callBackTime: string
@@ -32,6 +32,9 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
   const [fromDate, setFromDate] = useState<string | null>(null)
   const [toDate, setToDate] = useState<string | null>(null)
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [formData, setFormData] = useState<Partial<Lead>>({});
+
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -93,6 +96,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
       return
     }
 
+
     const worksheet = XLSX.utils.json_to_sheet(filteredLeads)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Leads")
@@ -109,7 +113,6 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
       })
 
       if (response.ok) {
-        alert("Leads imported successfully!")
         // Refresh leads after import
         const res = await fetch(`/api/employee-leads?employeeId=${employeeId}`)
         if (res.ok) {
@@ -125,6 +128,49 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
       alert("Error importing leads")
     }
   }
+  const handleUpdateLead = async () => {
+    if (!selectedLead) return;
+    // console.log(JSON.stringify(formData))
+    try {
+      const response = await fetch(`/api/lead/${selectedLead.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      const text = await response.text(); // Read response as text first
+      const responseData = text ? JSON.parse(text) : {}; // Parse only if non-empty
+  
+      if (!response.ok) {
+        console.error("Server Error Response:", responseData);
+        throw new Error("Failed to update lead");
+      }
+  
+      setLeads((prevLeads) =>
+        prevLeads.map((lead) => (lead.id === responseData.id ? responseData : lead))
+      );
+      setFilteredLeads((prevLeads) =>
+        prevLeads.map((lead) => (lead.id === responseData.id ? responseData : lead))
+      );
+  
+      setSelectedLead(null);
+      alert('Lead Updated Successfully!')
+    } catch (error) {
+      console.error("Error updating lead:", error);
+      alert('Error updating lead')
+    }
+  };
+  
+  const handleEditClick = (lead: Lead) => {
+    setSelectedLead(lead);
+    setFormData(lead);
+  };
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  
 
   return (
     <div className="p-10 mt-10 bg-white shadow-lg rounded-lg">
@@ -204,6 +250,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Call Back Time
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -217,13 +264,74 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                     {/* <td className="px-6 py-4 whitespace-nowrap">{lead.designaction}</td> */}
                     <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{new Date(lead.callBackTime).toLocaleString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{new Date(lead.callBackTime).toISOString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap" >   <button
+                        onClick={() => handleEditClick(lead)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                      >
+                        Edit
+                      </button> </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
+        {selectedLead && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-1/3">
+            <h2 className="text-xl font-semibold mb-4">Edit Lead</h2>
+
+            <label className="block mb-2">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name || ""}
+              onChange={handleFormChange}
+              className="w-full border px-4 py-2 rounded-lg mb-2"
+            />
+
+            <label className="block mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email || ""}
+              onChange={handleFormChange}
+              className="w-full border px-4 py-2 rounded-lg mb-2"
+            />
+
+            <label className="block mb-2">Status</label>
+            <select
+              name="status"
+              value={formData.status || ""}
+              onChange={handleFormChange}
+              className="w-full border px-4 py-2 rounded-lg mb-2"
+            >
+              <option value="hot">Hot</option>
+              <option value="cold">Cold</option>
+              <option value="sold">Sold</option>
+            </select>
+
+            <label className="block mb-2">Call Back Time</label>
+            <input
+              type="datetime-local"
+              name="callBackTime"
+              value={formData.callBackTime || ""}
+              onChange={handleFormChange}
+              className="w-full border px-4 py-2 rounded-lg mb-4"
+            />
+
+            <div className="flex justify-between">
+              <button onClick={() => setSelectedLead(null)} className="px-4 py-2 bg-gray-400 text-white rounded-lg">
+                Cancel
+              </button>
+              <button onClick={handleUpdateLead} className="px-4 py-2 bg-green-500 text-white rounded-lg">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   )

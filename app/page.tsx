@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import React from "react";
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function Home() {
         >
           Employee
         </button>
+        <ToastContainer />
       </div>
     </div>
   );
