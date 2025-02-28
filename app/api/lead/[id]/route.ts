@@ -35,8 +35,8 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
     });
 
     return NextResponse.json(updatedLead, { status: 200 });
-  } catch (error: any) {
-    console.error("Error updating lead:", error.message || error);
-    return NextResponse.json({ error: error.message || "Error updating lead" }, { status: 500 });
+  } catch (error) {
+    console.error("Error updating lead:", error);
+    return NextResponse.json({ error:  "Error updating lead" }, { status: 500 });
   }
 }
