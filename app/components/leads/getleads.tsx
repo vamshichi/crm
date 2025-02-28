@@ -130,16 +130,19 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
   }
   const handleUpdateLead = async () => {
     if (!selectedLead) return;
-    // console.log(JSON.stringify(formData))
+  
+    // Debugging: Log the formData before sending
+    console.log("FormData being sent:", formData);
+  
     try {
       const response = await fetch(`/api/lead/${selectedLead.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Make sure status is included
       });
   
-      const text = await response.text(); // Read response as text first
-      const responseData = text ? JSON.parse(text) : {}; // Parse only if non-empty
+      const text = await response.text();
+      const responseData = text ? JSON.parse(text) : {};
   
       if (!response.ok) {
         console.error("Server Error Response:", responseData);
@@ -149,17 +152,19 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
       setLeads((prevLeads) =>
         prevLeads.map((lead) => (lead.id === responseData.id ? responseData : lead))
       );
+  
       setFilteredLeads((prevLeads) =>
         prevLeads.map((lead) => (lead.id === responseData.id ? responseData : lead))
       );
   
       setSelectedLead(null);
-      alert('Lead Updated Successfully!')
+      alert("Lead Updated Successfully!");
     } catch (error) {
       console.error("Error updating lead:", error);
-      alert('Error updating lead')
+      alert("Error updating lead");
     }
   };
+  
   
   const handleEditClick = (lead: Lead) => {
     setSelectedLead(lead);
@@ -167,8 +172,14 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
   };
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value, // Ensure status is updated correctly
+    }));
+    console.log(`Updated Form Data - ${name}: ${value}`); // Debugging
   };
+  
+  
   
   
 
@@ -265,7 +276,8 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                     <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{new Date(lead.callBackTime).toISOString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap" >   <button
+                    <td className="px-6 py-4 whitespace-nowrap" >   
+                      <button
                         onClick={() => handleEditClick(lead)}
                         className="px-4 py-2 bg-blue-500 text-white rounded-lg"
                       >
@@ -308,9 +320,9 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
               className="w-full border px-4 py-2 rounded-lg mb-2"
             >
               
-              <option value="hot">Hot</option>
-              <option value="cold">Cold</option>
-              <option value="sold">Sold</option>
+              <option value="hot">HOT</option>
+              <option value="cold">COLD</option>
+              <option value="sold">SOLD</option>
             </select>
 
             <label className="block mb-2">Call Back Time</label>
@@ -339,3 +351,6 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
 }
 
 export default EmployeeLeads
+
+//089301505890
+//ICIC0000893

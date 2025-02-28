@@ -1,42 +1,73 @@
 import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
 
 export async function PUT(req: Request, context: { params: { id: string } }) {
   try {
     const { id } = context.params;
 
-    if (!id || !ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid or missing Lead ID" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: "Missing Lead ID" }, { status: 400 });
     }
 
     const requestBody = await req.json();
-    // eslint-disable-next-line prefer-const, @typescript-eslint/no-unused-vars
-    let { callBackTime, createdAt, id: _unusedId, ...rest } = requestBody; 
+    const {
+      callBackTime: rawCallBackTime,
+      createdAt: rawCreatedAt,
+      id: _unusedId,
+      status: rawStatus,
+      employeeId, 
+      ...rest 
+    } = requestBody;
 
+    // Ensure status is uppercase
+    const status = rawStatus ? rawStatus.toUpperCase() : undefined;
 
-    if (callBackTime) {
-      callBackTime = new Date(callBackTime);
-      if (isNaN(callBackTime.getTime())) {
-        return NextResponse.json({ error: "Invalid callBackTime format" }, { status: 400 });
-      }
+    // Convert callBackTime to Date
+    const callBackTime = rawCallBackTime
+      ? new Date(rawCallBackTime)
+      : undefined;
+    if (callBackTime && isNaN(callBackTime.getTime())) {
+      return NextResponse.json({ error: "Invalid callBackTime" }, { status: 400 });
     }
 
-    if (createdAt) {
-      createdAt = new Date(createdAt);
-      if (isNaN(createdAt.getTime())) {
-        return NextResponse.json({ error: "Invalid createdAt format" }, { status: 400 });
-      }
+    // Convert createdAt to Date
+    const createdAt = rawCreatedAt ? new Date(rawCreatedAt) : undefined;
+    if (createdAt && isNaN(createdAt.getTime())) {
+      return NextResponse.json({ error: "Invalid createdAt" }, { status: 400 });
     }
 
+    // Validate employeeId
+    if (!employeeId) {
+      return NextResponse.json(
+        { error: "Employee ID is required" },
+        { status: 400 }
+      );
+    }
+
+    console.log("Updating Lead with ID:", id);
+    console.log("Updated Data:", {
+      ...rest,
+      status,
+      callBackTime,
+      createdAt,
+      employeeId,
+    });
+
+    // Perform update with Prisma
     const updatedLead = await prisma.lead.update({
-      where: { id },
-      data: { ...rest, callBackTime, createdAt },
+      where: { id: id.toString() },
+      data: {
+        ...rest,
+        status,
+        callBackTime,
+        createdAt,
+        employee: { connect: { id: employeeId } },
+      },
     });
 
     return NextResponse.json(updatedLead, { status: 200 });
   } catch (error) {
     console.error("Error updating lead:", error);
-    return NextResponse.json({ error:  "Error updating lead" }, { status: 500 });
+    return NextResponse.json({ error: "Error updating lead" }, { status: 500 });
   }
 }
