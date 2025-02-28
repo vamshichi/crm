@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma"; // Ensure you have a Prisma instance configured
+import {prisma} from "@/app/lib/prisma"; // Ensure you have a Prisma instance configured
 
 export async function GET() {
   try {

@@ -135,7 +135,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
     console.log("FormData being sent:", formData);
   
     try {
-      const response = await fetch(`/api/lead/${selectedLead.id}`, {
+      const response = await fetch(`/api/editlead`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData), // Make sure status is included
@@ -170,13 +170,12 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
     setSelectedLead(lead);
     setFormData(lead);
   };
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value, // Ensure status is updated correctly
+      [name]: value,
     }));
-    console.log(`Updated Form Data - ${name}: ${value}`); // Debugging
   };
   
   
@@ -275,7 +274,16 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                     {/* <td className="px-6 py-4 whitespace-nowrap">{lead.designaction}</td> */}
                     <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{new Date(lead.callBackTime).toISOString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+  {new Date(lead.callBackTime).toLocaleString("en-IN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  })}
+</td>
                     <td className="px-6 py-4 whitespace-nowrap" >   
                       <button
                         onClick={() => handleEditClick(lead)}
@@ -290,67 +298,118 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
           </div>
         )}
         {selectedLead && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Edit Lead</h2>
+  <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
+    <div className="bg-white p-6 rounded-lg w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl shadow-lg overflow-y-auto max-h-[90vh]">
+      <h2 className="text-xl font-semibold mb-4 text-center">Edit Lead</h2>
 
-            <label className="block mb-2">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name || ""}
-              onChange={handleFormChange}
-              className="w-full border px-4 py-2 rounded-lg mb-2"
-            />
-
-            <label className="block mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email || ""}
-              onChange={handleFormChange}
-              className="w-full border px-4 py-2 rounded-lg mb-2"
-            />
-
-            <label className="block mb-2">Status</label>
-            <select
-              name="status"
-              value={formData.status || ""}
-              onChange={handleFormChange}
-              className="w-full border px-4 py-2 rounded-lg mb-2"
-            >
-              
-              <option value="hot">HOT</option>
-              <option value="cold">COLD</option>
-              <option value="sold">SOLD</option>
-            </select>
-
-            <label className="block mb-2">Call Back Time</label>
-            <input
-              type="datetime-local"
-              name="callBackTime"
-              value={formData.callBackTime || ""}
-              onChange={handleFormChange}
-              className="w-full border px-4 py-2 rounded-lg mb-4"
-            />
-
-            <div className="flex justify-between">
-              <button onClick={() => setSelectedLead(null)} className="px-4 py-2 bg-gray-400 text-white rounded-lg">
-                Cancel
-              </button>
-              <button onClick={handleUpdateLead} className="px-4 py-2 bg-green-500 text-white rounded-lg">
-                Save
-              </button>
-            </div>
-          </div>
+      <div className="space-y-3 overflow-y-auto max-h-[60vh] p-2">
+        <div>
+          <label className="block text-sm font-medium">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          />
         </div>
-      )}
+
+        <div>
+          <label className="block text-sm font-medium">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Company</label>
+          <input
+            type="text"
+            name="company"
+            value={formData.company || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Contact</label>
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">City</label>
+          <input
+            type="text"
+            name="city"
+            value={formData.city || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Note</label>
+          <textarea
+            name="message"
+            value={formData.message || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          ></textarea>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Status</label>
+          <select
+            name="status"
+            value={formData.status || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          >
+            <option value="HOT">HOT</option>
+            <option value="WARM">WARM</option>
+            <option value="COLD">COLD</option>
+            <option value="SOLD">SOLD</option>
+            <option value="CALL_BACK">CALL BACK</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Call Back Time</label>
+          <input
+            type="datetime-local"
+            name="callBackTime"
+            value={formData.callBackTime || ""}
+            onChange={handleFormChange}
+            className="w-full border px-4 py-2 rounded-lg"
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-4">
+        <button onClick={() => setSelectedLead(null)} className="px-4 py-2 bg-gray-400 text-white rounded-lg w-1/3">
+          Cancel
+        </button>
+        <button onClick={handleUpdateLead} className="px-4 py-2 bg-green-500 text-white rounded-lg w-1/3">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   )
 }
 
 export default EmployeeLeads
-
-//089301505890
-//ICIC0000893
