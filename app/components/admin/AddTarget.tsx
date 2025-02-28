@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
 const AddTarget = () => {
   const router = useRouter();
@@ -16,23 +17,19 @@ const AddTarget = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch departments when the component loads
     const fetchDepartments = async () => {
-        try {
-            const response = await fetch("/api/department");
-            console.log("API Response Status:", response.status);
-            
-            if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
-            
-            const data = await response.json();
-            console.log("Fetched Data:", data);
-            setDepartments(data);
-        } catch (err) {
-            console.error("Fetch Error:", err);
-            setError("Error loading departments.");
-        }
+      try {
+        const response = await fetch("/api/department");
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
+
+        const data = await response.json();
+        setDepartments(data);
+      } catch (err) {
+        console.error("Fetch Error:", err);
+        setError("Error loading departments.");
+        toast.error("Error loading departments!");
+      }
     };
-    
 
     fetchDepartments();
   }, []);
@@ -48,6 +45,7 @@ const AddTarget = () => {
 
     if (!formData.departmentId || !formData.amount || !formData.startDate || !formData.endDate) {
       setError("All fields are required.");
+      toast.error("All fields are required!");
       setLoading(false);
       return;
     }
@@ -56,18 +54,26 @@ const AddTarget = () => {
       const response = await fetch("/api/target", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          departmentId: formData.departmentId,
+          amount: parseFloat(formData.amount), // Ensure amount is a number
+          startDate: new Date(formData.startDate).toISOString(), // Convert date to ISO format
+          endDate: new Date(formData.endDate).toISOString(),
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to add target.");
-      }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to add target");
 
-      alert("Target added successfully!");
+      toast.success("Target added successfully! 🎯");
+
+      // Reset form after submission
+      setFormData({ departmentId: "", amount: "", startDate: "", endDate: "" });
       router.refresh();
     } catch (err) {
       const errorMessage = (err as Error).message || "Something went wrong!";
       setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -75,6 +81,7 @@ const AddTarget = () => {
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-md">
+      <Toaster position="top-right" reverseOrder={false} />
       <h2 className="text-xl font-semibold mb-4">Add Target</h2>
 
       {error && <p className="text-red-500 mb-3">{error}</p>}

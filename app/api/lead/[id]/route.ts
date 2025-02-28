@@ -1,10 +1,10 @@
-import prisma from "@/app/lib/prisma";
+import {prisma} from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
 export async function PUT(req: Request, context: { params: { id: string } }) {
   try {
-    const { id } = context.params; // ✅ Correctly getting `id` from context
+    const { id } = context.params;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing Lead ID" }, { status: 400 });
@@ -13,7 +13,7 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
     const requestBody = await req.json();
     // eslint-disable-next-line prefer-const, @typescript-eslint/no-unused-vars
     let { callBackTime, createdAt, id: _unusedId, ...rest } = requestBody; 
-    // ✅ Exclude `id` from data (Prisma does not allow updating `id`)
+
 
     if (callBackTime) {
       callBackTime = new Date(callBackTime);
@@ -31,7 +31,7 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
 
     const updatedLead = await prisma.lead.update({
       where: { id },
-      data: { ...rest, callBackTime, createdAt }, // ✅ Excluding `id`
+      data: { ...rest, callBackTime, createdAt },
     });
 
     return NextResponse.json(updatedLead, { status: 200 });

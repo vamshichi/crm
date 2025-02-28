@@ -307,6 +307,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
               onChange={handleFormChange}
               className="w-full border px-4 py-2 rounded-lg mb-2"
             >
+              
               <option value="hot">Hot</option>
               <option value="cold">Cold</option>
               <option value="sold">Sold</option>

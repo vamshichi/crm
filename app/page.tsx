@@ -1,12 +1,16 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { ToastContainer } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const router = useRouter();
+  const [ , setShowContent] = useState(false);
+
+useEffect(() => {
+    setTimeout(() => setShowContent(true), 2000);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -24,9 +28,7 @@ export default function Home() {
         >
           Employee
         </button>
-        <ToastContainer />
       </div>
     </div>
   );
 }
-
