@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if an admin with this email already exists...
+    // Check if an admin with this email already exists.......
     const existingAdmin = await prisma.admin.findUnique({ where: { email } });
     if (existingAdmin) {
       return NextResponse.json(
