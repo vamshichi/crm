@@ -267,7 +267,7 @@ const DepartmentList = () => {
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={() => setSelectedEmployee(null)}
-                className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded"
+                className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-4 rounded"
               >
                 Cancel
               </button>
