@@ -9,73 +9,54 @@ datasource db {
 
 model Admin {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String?
+  createdAt DateTime @db.Date
   email     String   @unique
+  name      String
   password  String
-  createdAt DateTime @default(now())
-}
-
-model Manager {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  email        String     @unique
-  password     String
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String     @db.ObjectId
-  createdAt    DateTime   @default(now())
-}
-
-
-model Employee {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  email        String     @unique
-  password     String
-  role         String
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String     @db.ObjectId
-  leads        Lead[]
-  createdAt    DateTime   @default(now())
-}
-
-model Lead {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  email        String
-  company      String
-  phone        String
-  city         String
-  designaction String?
-  message      String
-  status       LeadStatus
-  callBackTime DateTime?
-  employee     Employee   @relation(fields: [employeeId], references: [id])
-  employeeId   String     @db.ObjectId
-  createdAt    DateTime   @default(now())
 }
 
 model Department {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  name      String     @unique
-  employees Employee[]
-  managers  Manager[]
-  target    Target?
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique
+}
+
+model Employee {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime @db.Date
+  departmentId String   @db.ObjectId
+  email        String   @unique
+  name         String
+  password     String
+  role         String
+}
+
+model Lead {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  callBackTime DateTime @db.Date
+  city         String
+  company      String
+  createdAt    DateTime @db.Date
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  designaction Json?
+  email        String
+  employeeId   String   @db.ObjectId
+  message      String
+  name         String
+  phone        String
+  status       String
+}
+
+model Manager {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  /// Field referred in an index, but found no data to define the type.
+  email Json?  @unique
 }
 
 model Target {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String     @unique @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   amount       Float
-  startDate    DateTime
-  endDate      DateTime
-  createdAt    DateTime   @default(now())
-}
-
-enum LeadStatus {
-  HOT
-  COLD
-  WARM
-  SOLD
-  CALL_BACK
+  createdAt    DateTime @db.Date
+  departmentId String   @unique @db.ObjectId
+  endDate      DateTime @db.Date
+  startDate    DateTime @db.Date
 }
