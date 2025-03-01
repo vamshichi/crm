@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation"; // Using usePathname instead of useRouter
+import { User, Mail, Building, Phone, MapPin, MessageCircle, Calendar, Loader2 } from "lucide-react";
 
 export default function LeadForm() {
   const [formData, setFormData] = useState({
@@ -77,56 +78,74 @@ export default function LeadForm() {
       <h2 className="text-xl font-semibold mb-4">Add Lead</h2>
       {message && <p className="text-green-600">{message}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="name"
-          placeholder="Lead Name"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.name}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.email}
-          required
-        />
-        <input
-          type="text"
-          name="company"
-          placeholder="Company"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.company}
-        />
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.phone}
-        />
-        <input
-          type="text"
-          name="city"
-          placeholder="City"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.city}
-        />
-        <textarea
-          name="message"
-          placeholder="Message"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.message}
-          required
-        ></textarea>
+        <div className="relative">
+          <User className="absolute left-3 top-3 text-gray-500" size={18} />
+          <input
+            type="text"
+            name="name"
+            placeholder="Lead Name"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.name}
+            required
+          />
+        </div>
+        <div className="relative">
+          <Mail className="absolute left-3 top-3 text-gray-500" size={18} />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.email}
+            required
+          />
+        </div>
+        <div className="relative">
+          <Building className="absolute left-3 top-3 text-gray-500" size={18} />
+          <input
+            type="text"
+            name="company"
+            placeholder="Company"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.company}
+          />
+        </div>
+        <div className="relative">
+          <Phone className="absolute left-3 top-3 text-gray-500" size={18} />
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.phone}
+          />
+        </div>
+        <div className="relative">
+          <MapPin className="absolute left-3 top-3 text-gray-500" size={18} />
+          <input
+            type="text"
+            name="city"
+            placeholder="City"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.city}
+          />
+        </div>
+        <div className="relative">
+          <MessageCircle className="absolute left-3 top-3 text-gray-500" size={18} />
+          <textarea
+            name="message"
+            placeholder="Message"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.message}
+            required
+          ></textarea>
+        </div>
         <select
           name="status"
           className="w-full p-2 border rounded"
@@ -139,18 +158,22 @@ export default function LeadForm() {
           <option value="SOLD">Sold</option>
           <option value="CALL_BACK">Call Back</option>
         </select>
-        <input
-          type="datetime-local"
-          name="callBackTime"
-          className="w-full p-2 border rounded"
-          onChange={handleChange}
-          value={formData.callBackTime}
-        />
+        <div className="relative">
+          <Calendar className="absolute left-3 top-3 text-gray-500" size={18} />
+          <input
+            type="datetime-local"
+            name="callBackTime"
+            className="w-full p-2 pl-10 border rounded"
+            onChange={handleChange}
+            value={formData.callBackTime}
+          />
+        </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded"
+          className="w-full bg-blue-500 text-white p-2 rounded flex justify-center items-center gap-2"
           disabled={loading}
         >
+          {loading ? <Loader2 className="animate-spin" size={18} /> : null}
           {loading ? "Submitting..." : "Submit Lead"}
         </button>
       </form>

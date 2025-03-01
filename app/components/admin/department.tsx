@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Edit, Trash2, PlusCircle } from "lucide-react"; // Importing icons
 
 interface DepartmentType {
   id: string;
   name: string;
-  // Add other fields if necessary
 }
 
 export default function DepartmentPage() {
@@ -51,36 +51,43 @@ export default function DepartmentPage() {
     <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Manage Departments</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 flex">
         <input
           type="text"
           placeholder="Department Name"
-          className="w-full p-2 border rounded"
+          className="flex-1 p-2 border rounded"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
-          {editId ? "Update" : "Add"} Department
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded flex items-center gap-2"
+        >
+          <PlusCircle className="w-5 h-5" />
+          {editId ? "Update" : "Add"}
         </button>
       </form>
 
       <ul className="mt-4">
         {departments.map((dept: DepartmentType) => (
-          <li key={dept.id} className="flex justify-between p-2 border-b">
-            {dept.name}
-            <div>
+          <li key={dept.id} className="flex justify-between items-center p-2 border-b">
+            <span>{dept.name}</span>
+            <div className="flex items-center">
               <button
-                className="text-blue-500 mr-2"
+                className="text-blue-500 hover:text-blue-700 p-2"
                 onClick={() => {
                   setEditId(dept.id);
                   setName(dept.name);
                 }}
               >
-                Edit
+                <Edit className="w-5 h-5" />
               </button>
-              <button className="text-red-500" onClick={() => handleDelete(dept.id)}>
-                Delete
+              <button
+                className="text-red-500 hover:text-red-700 p-2"
+                onClick={() => handleDelete(dept.id)}
+              >
+                <Trash2 className="w-5 h-5" />
               </button>
             </div>
           </li>

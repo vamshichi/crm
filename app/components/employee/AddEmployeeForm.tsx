@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { User, Mail, Lock, Briefcase, Building2 } from "lucide-react";
 
 type Department = {
   id: string;
@@ -52,62 +53,67 @@ export default function EmployeeForm() {
       <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Add Employee</h2>
       {message && <p className="text-red-500 text-center mb-2">{message}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
+        
+        {/* Name Field */}
+        <div className="relative">
+          <User className="absolute left-3 top-3 text-gray-500" size={20} />
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter name"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+        {/* Email Field */}
+        <div className="relative">
+          <Mail className="absolute left-3 top-3 text-gray-500" size={20} />
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter email"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+        {/* Password Field */}
+        <div className="relative">
+          <Lock className="absolute left-3 top-3 text-gray-500" size={20} />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter password"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Role</label>
+        {/* Role Field */}
+        <div className="relative">
+          <Briefcase className="absolute left-3 top-3 text-gray-500" size={20} />
           <input
             type="text"
             value={role}
             onChange={(e) => setRole(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter role"
           />
         </div>
 
-        {/* Dropdown for Departments */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Department</label>
+        {/* Department Dropdown */}
+        <div className="relative">
+          <Building2 className="absolute left-3 top-3 text-gray-500" size={20} />
           <select
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 pl-10 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select a department</option>
             {departments.map((dept) => (

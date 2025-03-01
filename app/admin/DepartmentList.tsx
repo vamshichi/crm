@@ -3,7 +3,7 @@
 import CircularProgress from "@/app/components/ui/CircularProgress"; // Adjust the path as needed
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import { Trash2, Eye, ChevronDown, ChevronUp } from "lucide-react";
 interface Lead {
   id: string;
   status: string;
@@ -151,7 +151,8 @@ const DepartmentList = () => {
                   aria-expanded={isExpanded}
                   aria-controls={`dept-${dept.id}-content`}
                 >
-                  {isExpanded ? "View Less" : "View More"}
+                  {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />} 
+                  {isExpanded ? "Collapse" : "Expand"}
                 </button>
               </div>
               <div className="flex justify-around py-10">
@@ -229,20 +230,20 @@ const DepartmentList = () => {
         <td className="border p-2 text-center">{totalLeads}</td>
         <td className="border p-2 text-center text-green-600 font-bold">{soldLeads}</td>
         <td className="border p-2 text-center text-red-600 font-bold">{empHotLeads}</td>
-        <td className="border p-2 text-center flex justify-evenly">
-          <button
-            onClick={() => router.push(`/employee/${emp.id}`)}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
-          >
-            View More
-          </button>
-          <button
-            onClick={() => handleEmployeeSelect(emp)}
-            className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
-          >
-            Delete
-          </button>
-        </td>
+        <td className="border p-2 text-center flex gap-2 justify-center">
+                                <button
+                                  onClick={() => router.push(`/employee/${emp.id}`)}
+                                  className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded flex items-center"
+                                >
+                                  <Eye size={16} className="mr-1" /> View
+                                </button>
+                                <button
+                                  onClick={() => handleEmployeeSelect(emp)}
+                                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded flex items-center"
+                                >
+                                  <Trash2 size={16} className="mr-1" /> Delete
+                                </button>
+                              </td>
       </tr>
     );
   })}
