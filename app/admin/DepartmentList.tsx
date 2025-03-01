@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import CircularProgress from "@/app/components/ui/CircularProgress"; // Adjust the path as needed
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Lead {
   id: string;
@@ -29,6 +29,9 @@ const DepartmentList = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [expandedDepartments, setExpandedDepartments] = useState<string[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [isDeleting, setIsDeleting ] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -52,7 +55,52 @@ const DepartmentList = () => {
         : [...prev, deptId]
     );
   };
+ 
+  const handleEmployeeSelect = (employee: Employee) => {
+    setSelectedEmployee(employee)
+  }
 
+  const confirmDelete = async () => {
+    if (!selectedEmployee) return;
+    
+    console.log("Deleting Employee ID:", selectedEmployee.id); // Debugging
+    
+    setIsDeleting(true);
+    setError(null); // Clear previous errors
+  
+    try {
+      const response = await fetch(`/api/delete_employee?id=${selectedEmployee.id}`, {
+        method: "DELETE",
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete employee");
+      }
+  
+      if (data.success) {
+        setDepartments((prevDepartments) =>
+          prevDepartments.map((dept) => ({
+            ...dept,
+            employees: dept.employees?.filter((emp) => emp.id !== selectedEmployee.id),
+          }))
+        );
+        setSelectedEmployee(null);
+      } else {
+        throw new Error(data.message || "Failed to delete employee");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  
+  
+
+  
   return (
     <div className="space-y-6">
       {error && (
@@ -170,40 +218,36 @@ const DepartmentList = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {employeeDetails.map((emp) => {
-                            const totalLeads = emp.leads.length;
-                            const soldLeads = emp.leads.filter(
-                              (lead) =>
-                                lead.status &&
-                                lead.status.toUpperCase() === "SOLD"
-                            ).length;
-                            const empHotLeads = emp.leads.filter(
-                              (lead) =>
-                                lead.status &&
-                                lead.status.toUpperCase() === "HOT"
-                            ).length;
-                            return (
-                              <tr key={emp.id} className="hover:bg-gray-50">
-                                <td className="border p-2">{emp.name}</td>
-                                <td className="border p-2 text-center">{totalLeads}</td>
-                                <td className="border p-2 text-center text-green-600 font-bold">
-                                  {soldLeads}
-                                </td>
-                                <td className="border p-2 text-center text-red-600 font-bold">
-                                  {empHotLeads}
-                                </td>
-                                <td className="border p-2 text-center">
-                                  <button
-                                    onClick={() => router.push(`/employee/${emp.id}`)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
-                                  >
-                                    View More
-                                  </button>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
+  {employeeDetails.map((emp) => {
+    const totalLeads = emp.leads.length;
+    const soldLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "SOLD").length;
+    const empHotLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "HOT").length;
+
+    return (
+      <tr key={emp.id} className="hover:bg-gray-50">
+        <td className="border p-2">{emp.name}</td>
+        <td className="border p-2 text-center">{totalLeads}</td>
+        <td className="border p-2 text-center text-green-600 font-bold">{soldLeads}</td>
+        <td className="border p-2 text-center text-red-600 font-bold">{empHotLeads}</td>
+        <td className="border p-2 text-center flex justify-evenly">
+          <button
+            onClick={() => router.push(`/employee/${emp.id}`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+          >
+            View More
+          </button>
+          <button
+            onClick={() => handleEmployeeSelect(emp)}
+            className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
                       </table>
                     </div>
                   )}
@@ -212,6 +256,31 @@ const DepartmentList = () => {
             </div>
           );
         })
+      )}
+      {selectedEmployee && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h3 className="text-lg font-semibold">Confirm Deletion</h3>
+            <p className="mt-2 text-gray-600">
+              Are you sure you want to delete <strong>{selectedEmployee.name}</strong>?
+            </p>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                onClick={() => setSelectedEmployee(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-4 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
+              >
+                {isDeleting ? "Deleting..." : "Confirm Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
