@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { UserCheck } from "lucide-react";
 
 interface EmployeeLeadCountProps {
   employeeId: string;
@@ -14,7 +15,7 @@ const EmployeeLeadCount: React.FC<EmployeeLeadCountProps> = ({ employeeId }) => 
       try {
         const response = await fetch(`/api/leads/employee/${employeeId}`);
         if (!response.ok) throw new Error("Failed to fetch lead count");
-        
+
         const data = await response.json();
         setLeadCount(data.count);
       } catch (err) {
@@ -26,9 +27,16 @@ const EmployeeLeadCount: React.FC<EmployeeLeadCountProps> = ({ employeeId }) => 
   }, [employeeId]);
 
   return (
-    <div className="p-4 border rounded-lg shadow-md">
-      <h2 className="text-lg font-semibold">Employee Lead Count</h2>
-      {error ? <p className="text-red-500">{error}</p> : <p>Total Leads: {leadCount ?? "Loading..."}</p>}
+    <div className="p-4 border rounded-lg shadow-md flex items-center gap-3 bg-white">
+      <UserCheck size={24} className="text-green-600" />
+      <div>
+        <h2 className="text-lg font-semibold">Employee Lead Count</h2>
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <p className="text-gray-700">Total Leads: {leadCount ?? "Loading..."}</p>
+        )}
+      </div>
     </div>
   );
 };

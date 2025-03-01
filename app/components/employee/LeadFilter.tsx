@@ -3,6 +3,7 @@
 import type React from "react"
 import { useRef } from "react"
 import * as XLSX from "xlsx"
+import { FileText, UploadCloud, Download, CalendarDays, Calendar } from "lucide-react"
 
 interface LeadFilterProps {
   selectedStatus: string | null
@@ -100,7 +101,7 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
         <button
           key={status}
           onClick={() => onStatusChange(status === selectedStatus ? null : status)}
-          className={`px-4 py-2 rounded-md border ${
+          className={`px-4 py-2 rounded-md border flex items-center gap-2 ${
             selectedStatus === status ? "bg-blue-500 text-white" : "bg-gray-200"
           }`}
         >
@@ -108,46 +109,61 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
         </button>
       ))}
 
-      <button onClick={onWeekFilter} className="px-4 py-2 rounded-md border bg-green-500 text-white">
+      {/* This Week Button */}
+      <button onClick={onWeekFilter} className="px-4 py-2 rounded-md border bg-green-500 text-white flex items-center gap-2">
+        <CalendarDays size={18} />
         This Week
       </button>
 
-      <div className="flex items-center gap-2">
+      {/* Date Pickers */}
+      <div className="flex items-center gap-2 relative">
         <label htmlFor="from-date" className="text-sm font-semibold">
           From:
         </label>
-        <input
-          id="from-date"
-          type="date"
-          value={fromDate || ""}
-          onChange={(e) => onFromDateChange(e.target.value || null)}
-          className="px-4 py-2 border rounded-md"
-        />
+        <div className="relative">
+          <Calendar className="absolute left-2 top-3 text-gray-500" size={16} />
+          <input
+            id="from-date"
+            type="date"
+            value={fromDate || ""}
+            onChange={(e) => onFromDateChange(e.target.value || null)}
+            className="px-4 py-2 pl-8 border rounded-md"
+          />
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 relative">
         <label htmlFor="to-date" className="text-sm font-semibold">
           To:
         </label>
-        <input
-          id="to-date"
-          type="date"
-          value={toDate || ""}
-          onChange={(e) => onToDateChange(e.target.value || null)}
-          className="px-4 py-2 border rounded-md"
-        />
+        <div className="relative">
+          <Calendar className="absolute left-2 top-3 text-gray-500" size={16} />
+          <input
+            id="to-date"
+            type="date"
+            value={toDate || ""}
+            onChange={(e) => onToDateChange(e.target.value || null)}
+            className="px-4 py-2 pl-8 border rounded-md"
+          />
+        </div>
       </div>
 
-      <button onClick={onExport} className="px-4 py-2 rounded-md border bg-yellow-500 text-white">
+      {/* Export Button */}
+      <button onClick={onExport} className="px-4 py-2 rounded-md border bg-yellow-500 text-white flex items-center gap-2">
+        <FileText size={18} />
         Export to Excel
       </button>
 
-      <button onClick={triggerFileInput} className="px-4 py-2 rounded-md border bg-blue-500 text-white">
+      {/* Import Button */}
+      <button onClick={triggerFileInput} className="px-4 py-2 rounded-md border bg-blue-500 text-white flex items-center gap-2">
+        <UploadCloud size={18} />
         Import Excel
       </button>
       <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".xlsx, .xls" className="hidden" />
 
-      <button onClick={downloadTemplate} className="px-4 py-2 rounded-md border bg-purple-500 text-white">
+      {/* Download Template Button */}
+      <button onClick={downloadTemplate} className="px-4 py-2 rounded-md border bg-purple-500 text-white flex items-center gap-2">
+        <Download size={18} />
         Download Template
       </button>
     </div>

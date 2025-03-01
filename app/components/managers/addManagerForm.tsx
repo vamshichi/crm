@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { User, Mail, Lock, Building2, CheckCircle } from "lucide-react";
 
 type Department = {
   id: string;
@@ -59,53 +60,55 @@ export default function ManagerForm() {
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Add Manager</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 flex items-center justify-center">
+        <CheckCircle className="mr-2 text-green-600" /> Add Manager
+      </h2>
       {message && <p className="text-red-500 text-center mb-2">{message}</p>}
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
+        <div className="flex items-center border border-gray-300 rounded-lg p-2">
+          <User className="text-gray-500 mr-2" />
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full focus:outline-none"
             placeholder="Enter name"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+        <div className="flex items-center border border-gray-300 rounded-lg p-2">
+          <Mail className="text-gray-500 mr-2" />
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full focus:outline-none"
             placeholder="Enter email"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+        <div className="flex items-center border border-gray-300 rounded-lg p-2">
+          <Lock className="text-gray-500 mr-2" />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full focus:outline-none"
             placeholder="Enter password"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Department</label>
+        <div className="flex items-center border border-gray-300 rounded-lg p-2 bg-white">
+          <Building2 className="text-gray-500 mr-2" />
           <select
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
             required
-            className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full focus:outline-none bg-transparent"
           >
             <option value="">Select a department</option>
             {departments.map((dept) => (
@@ -118,14 +121,11 @@ export default function ManagerForm() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200"
+          className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center"
         >
-          Add Manager
+          <CheckCircle className="mr-2" /> Add Manager
         </button>
       </form>
-
-     
-
     </div>
   );
 }

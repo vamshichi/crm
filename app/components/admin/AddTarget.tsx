@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Building, DollarSign, Calendar } from "lucide-react"; // Import icons
 
 const AddTarget = () => {
   const router = useRouter();
@@ -16,23 +17,19 @@ const AddTarget = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch departments when the component loads
     const fetchDepartments = async () => {
-        try {
-            const response = await fetch("/api/department");
-            console.log("API Response Status:", response.status);
-            
-            if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
-            
-            const data = await response.json();
-            console.log("Fetched Data:", data);
-            setDepartments(data);
-        } catch (err) {
-            console.error("Fetch Error:", err);
-            setError("Error loading departments.");
-        }
+      try {
+        const response = await fetch("/api/department");
+        console.log("API Response Status:", response.status);
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
+        const data = await response.json();
+        console.log("Fetched Data:", data);
+        setDepartments(data);
+      } catch (err) {
+        console.error("Fetch Error:", err);
+        setError("Error loading departments.");
+      }
     };
-    
 
     fetchDepartments();
   }, []);
@@ -81,52 +78,64 @@ const AddTarget = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Department Dropdown */}
-        <select
-          name="departmentId"
-          value={formData.departmentId}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        >
-          <option value="">Select a Department</option>
-          {departments.map((dept) => (
-            <option key={dept.id} value={dept.id}>
-              {dept.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center border rounded p-2">
+          <Building className="w-5 h-5 text-gray-500 mr-2" />
+          <select
+            name="departmentId"
+            value={formData.departmentId}
+            onChange={handleChange}
+            className="w-full outline-none"
+          >
+            <option value="">Select a Department</option>
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.id}>
+                {dept.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Target Amount */}
-        <input
-          type="number"
-          name="amount"
-          placeholder="Target Amount"
-          value={formData.amount}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
+        <div className="flex items-center border rounded p-2">
+          <DollarSign className="w-5 h-5 text-gray-500 mr-2" />
+          <input
+            type="number"
+            name="amount"
+            placeholder="Target Amount"
+            value={formData.amount}
+            onChange={handleChange}
+            className="w-full outline-none"
+          />
+        </div>
 
         {/* Start Date */}
-        <input
-          type="date"
-          name="startDate"
-          value={formData.startDate}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
+        <div className="flex items-center border rounded p-2">
+          <Calendar className="w-5 h-5 text-gray-500 mr-2" />
+          <input
+            type="date"
+            name="startDate"
+            value={formData.startDate}
+            onChange={handleChange}
+            className="w-full outline-none"
+          />
+        </div>
 
         {/* End Date */}
-        <input
-          type="date"
-          name="endDate"
-          value={formData.endDate}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
+        <div className="flex items-center border rounded p-2">
+          <Calendar className="w-5 h-5 text-gray-500 mr-2" />
+          <input
+            type="date"
+            name="endDate"
+            value={formData.endDate}
+            onChange={handleChange}
+            className="w-full outline-none"
+          />
+        </div>
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center"
           disabled={loading}
         >
           {loading ? "Adding..." : "Add Target"}

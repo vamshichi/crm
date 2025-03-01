@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { useRouter } from "next/navigation";
-import CircularProgress from "@/app/components/ui/CircularProgress"; // Adjust the path as needed
+import { Building, Target, Users, CheckCircle } from "lucide-react"; 
+import CircularProgress from "@/app/components/ui/CircularProgress"; 
 
 interface Lead {
   id: string;
@@ -26,13 +26,12 @@ interface Department {
 }
 
 interface DepartmentListProps {
-  employeeId: string; // Employee ID to filter departments
+  employeeId: string; 
 }
 
 const DepartmentList = ({ employeeId }: DepartmentListProps) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [error, setError] = useState<string | null>(null);
-//   const router = useRouter();
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -41,7 +40,6 @@ const DepartmentList = ({ employeeId }: DepartmentListProps) => {
         if (!response.ok) throw new Error("Failed to fetch department data");
         const data: Department[] = await response.json();
 
-        // Find the department where the employee exists
         const filteredDepartment = data.find((dept) =>
           dept.employees?.some((emp) => emp.id === employeeId)
         );
@@ -62,31 +60,37 @@ const DepartmentList = ({ employeeId }: DepartmentListProps) => {
         </div>
       )}
       {departments.length === 0 && !error ? (
-        <div className="text-gray-500 text-center p-4">Loding.</div>
+        <div className="text-gray-500 text-center p-4">Loading...</div>
       ) : (
         departments.map((dept) => (
           <div
             key={dept.id}
             className="bg-white p-6 rounded-lg shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
           >
-            <h3 className="text-2xl font-semibold mb-4 text-center border-b pb-2">
-              {dept.name}
+            <h3 className="text-2xl font-semibold mb-4 text-center border-b pb-2 flex items-center justify-center gap-2">
+              <Building className="text-green-600" size={24} /> {dept.name}
             </h3>
             <div className="flex justify-around py-10">
-              <div className="w-20 h-20">
+              <div className="w-20 h-20 flex flex-col items-center">
                 <CircularProgress
                   value={dept.target ? 100 : 0}
                   text={dept.target ? `${dept.target}` : "N/A"}
                 />
-                <p className="text-center mt-2 text-xs text-gray-600">Target</p>
+                <div className="flex items-center gap-1 mt-2 text-xs text-gray-600">
+                  <Target size={16} className="text-blue-500" /> Target
+                </div>
               </div>
-              <div className="w-20 h-20">
+              <div className="w-20 h-20 flex flex-col items-center">
                 <CircularProgress value={100} text={`${dept.totalLeads}`} />
-                <p className="text-center mt-2 text-xs text-gray-600">Total Leads</p>
+                <div className="flex items-center gap-1 mt-2 text-xs text-gray-600">
+                  <Users size={16} className="text-yellow-500" /> Total Leads
+                </div>
               </div>
-              <div className="w-20 h-20">
+              <div className="w-20 h-20 flex flex-col items-center">
                 <CircularProgress value={100} text={`${dept.soldLeads}`} />
-                <p className="text-center mt-2 text-xs text-gray-600">Sold Leads</p>
+                <div className="flex items-center gap-1 mt-2 text-xs text-gray-600">
+                  <CheckCircle size={16} className="text-green-500" /> Sold Leads
+                </div>
               </div>
             </div>
           </div>
