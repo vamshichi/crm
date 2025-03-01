@@ -2,6 +2,7 @@ import { prisma } from "@/app/lib/prisma";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest) {
+    console.log('error');
     try {
       const url = new URL(request.url);
       const id = url.searchParams.get("id");
