@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -63,7 +63,7 @@ export default function AdminLogin() {
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
           >
-            Login
+            Login.
           </button>
         </form>
       </div>

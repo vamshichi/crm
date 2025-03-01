@@ -6,7 +6,7 @@ import Sidebar from "@/app/components/admin/Sidebar";
 import AddEmployee from "@/app/components/employee/AddEmployeeForm";
 import AddDepartment from "@/app/components/admin/department"; // Component to add department
 import AddTarget from "@/app/components/admin/AddTarget";
-import DepartmentList from "@/app/admin/DepartmentList";
+import DepartmentList from "./DepartmentList";
 import AdminForm from "../components/admin/adminform";
 import ManagerForm from "../components/managers/addManagerForm";
 
@@ -75,7 +75,7 @@ export default function AdminPage() {
             {/* <ManagerForm /> */}
             <div className="p-4 border rounded-lg shadow-md bg-white">
               <h2 className="text-xl font-semibold mb-4">Projects Overview</h2>
-              <DepartmentList />
+              <DepartmentList/>
             </div>
           </>
         );

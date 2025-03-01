@@ -1,7 +1,7 @@
 // app/api/admin/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import {prisma} from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import bcrypt from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if an admin with this email already exists
+    // Check if an admin with this email already exists.......
     const existingAdmin = await prisma.admin.findUnique({ where: { email } });
     if (existingAdmin) {
       return NextResponse.json(
