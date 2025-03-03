@@ -14,7 +14,7 @@ const AddTarget = () => {
     endDate: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState({ text: "", type: "" }); // Success or error message
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -27,7 +27,7 @@ const AddTarget = () => {
         setDepartments(data);
       } catch (err) {
         console.error("Fetch Error:", err);
-        setError("Error loading departments.");
+        setMessage({ text: "Error loading departments.", type: "error" });
       }
     };
 
@@ -41,10 +41,10 @@ const AddTarget = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setMessage({ text: "", type: "" });
 
     if (!formData.departmentId || !formData.amount || !formData.startDate || !formData.endDate) {
-      setError("All fields are required.");
+      setMessage({ text: "All fields are required.", type: "error" });
       setLoading(false);
       return;
     }
@@ -60,11 +60,12 @@ const AddTarget = () => {
         throw new Error("Failed to add target.");
       }
 
-      alert("Target added successfully!");
+      setMessage({ text: "Target added successfully!", type: "success" });
+      setFormData({ departmentId: "", amount: "", startDate: "", endDate: "" }); // Reset form
       router.refresh();
     } catch (err) {
       const errorMessage = (err as Error).message || "Something went wrong!";
-      setError(errorMessage);
+      setMessage({ text: errorMessage, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -74,7 +75,16 @@ const AddTarget = () => {
     <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-xl font-semibold mb-4">Add Target</h2>
 
-      {error && <p className="text-red-500 mb-3">{error}</p>}
+      {/* Success or Error Message */}
+      {message.text && (
+        <p
+          className={`text-center mb-3 ${
+            message.type === "success" ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {message.text}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Department Dropdown */}

@@ -15,6 +15,7 @@ export default function ManagerForm() {
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -33,9 +34,11 @@ export default function ManagerForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setMessageType("");
 
     if (!name || !email || !password || !departmentId) {
       setMessage("All fields are required.");
+      setMessageType("error");
       return;
     }
 
@@ -49,12 +52,14 @@ export default function ManagerForm() {
 
     if (response.ok) {
       setMessage("Manager added successfully.");
+      setMessageType("success");
       setName("");
       setEmail("");
       setPassword("");
       setDepartmentId("");
     } else {
       setMessage(data.error || "Failed to add manager.");
+      setMessageType("error");
     }
   };
 
@@ -63,8 +68,17 @@ export default function ManagerForm() {
       <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 flex items-center justify-center">
         <CheckCircle className="mr-2 text-green-600" /> Add Manager
       </h2>
-      {message && <p className="text-red-500 text-center mb-2">{message}</p>}
-      
+
+      {message && (
+        <p
+          className={`text-center mb-2 ${
+            messageType === "success" ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center border border-gray-300 rounded-lg p-2">
           <User className="text-gray-500 mr-2" />
