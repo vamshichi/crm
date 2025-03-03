@@ -1,97 +1,78 @@
 "use client";
 
 import { useState } from "react";
-// import { useRouter } from "next/navigation";
+
 import Sidebar from "@/app/components/admin/Sidebar";
 import AddEmployee from "@/app/components/employee/AddEmployeeForm";
-import AddDepartment from "@/app/components/admin/department"; // Component to add department
+import AddDepartment from "@/app/components/admin/department";
 import AddTarget from "@/app/components/admin/AddTarget";
 import DepartmentList from "@/app/admin/DepartmentList";
 import AdminForm from "../components/admin/adminform";
 import ManagerForm from "../components/managers/addManagerForm";
+import { Menu, X } from "lucide-react";
 
 export default function AdminPage() {
-  // Define activeTab values. You can adjust these values as needed.
-  const [activeTab, setActiveTab] = useState("dashboard");
 
-  // Render main content based on the active tab
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+
   const renderContent = () => {
     switch (activeTab) {
       case "add-admin":
-        return (
-          <div className="mb-6">
-            <AdminForm />
-          </div>
-        );
-        case "add-manager":
-        return (
-          <div className="mb-6">
-            <ManagerForm />
-          </div>
-        );
+        return <AdminForm />;
+      case "add-manager":
+        return <ManagerForm />;
       case "add-employee":
-        return (
-          <div className="mb-6">
-            <AddEmployee />
-          </div>
-        );
+        return <AddEmployee />;
       case "set-department-target":
-        return (
-          <div className="mb-6 p-4 border rounded-lg shadow-md bg-white">
-            <h2 className="text-xl font-semibold mb-2">Set Department Targets</h2>
-            <AddDepartment />
-          </div>
-        );
+        return <AddDepartment />;
       case "set-target":
-        return (
-          <div className="mb-6 p-4 border rounded-lg shadow-md bg-white">
-            <h2 className="text-xl font-semibold mb-2">Set Department Targets</h2>
-            <AddTarget />
-          </div>
-        );
-    //   case "departments":
-    //     return (
-    //       <div className="p-4 border rounded-lg shadow-md bg-white">
-    //         <h2 className="text-xl font-semibold mb-4">Departments Overview</h2>
-    //         <DepartmentList />
-    //       </div>
-    //     );
+        return <AddTarget />;
       case "dashboard":
       default:
-        // Default dashboard shows all components
-        return (
-          <>
-            {/* <div className="mb-6">
-              <AddEmployee />
-            </div>
-            <div className="mb-6 p-4 border rounded-lg shadow-md bg-white">
-              <h2 className="text-xl font-semibold mb-2">Set Department Targets</h2>
-              <AddDepartment />
-            </div>
-            <div className="mb-6 p-4 border rounded-lg shadow-md bg-white">
-              <h2 className="text-xl font-semibold mb-2">Set Department Targets</h2>
-              <AddTarget />
-            </div> */}
-            {/* <ManagerForm /> */}
-            <div className="p-4 border rounded-lg shadow-md bg-white">
-              <h2 className="text-xl font-semibold mb-4">Projects Overview</h2>
-              <DepartmentList />
-            </div>
-          </>
-        );
+        return <DepartmentList />;
     }
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div
+        className={`fixed md:relative inset-y-0 left-0 w-64 bg-gray-800 text-white transition-transform duration-300 
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 
+        h-full min-h-screen overflow-y-auto z-50`}
+      >
+        {/* Mobile Close Button */}
+        <div className="flex justify-between items-center p-4 md:hidden">
+          <h2 className="text-lg font-semibold">Menu</h2>
+          <button onClick={() => setSidebarOpen(false)}>
+            <X size={24} />
+          </button>
+        </div>
+        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-8 bg-blue-300 text-black ml-64 overflow-y-auto h-screen">
-        <h1 className="text-3xl font-bold mb-10 text-white text-center">Super Admin Dashboard</h1>
-        {renderContent()}
-      </main>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col h-screen overflow-auto">
+        {/* Mobile Navbar */}
+        <div className="md:hidden flex items-center justify-between bg-blue-600 text-white p-4">
+          <h1 className="text-xl font-bold">Admin Dashboard</h1>
+          <button onClick={() => setSidebarOpen(true)}>
+            <Menu size={28} />
+          </button>
+        </div>
+
+        {/* Main Content Section */}
+        <main className="flex-1 p-4 md:p-8 bg-blue-300 text-black overflow-y-auto">
+          <h1 className="hidden md:block text-3xl font-bold mb-6 text-white text-center">
+            Super Admin Dashboard
+          </h1>
+          <div className="bg-white p-4 rounded-lg shadow-md overflow-hidden">
+            {renderContent()}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

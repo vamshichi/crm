@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Shield, User } from "lucide-react"; // Importing icons
 import { Typewriter } from "react-simple-typewriter"; // Typing effect
+import { Briefcase } from "lucide-react"; 
 
 export default function Home() {
   const router = useRouter();
@@ -80,6 +81,13 @@ export default function Home() {
           >
             <Shield size={24} /> Admin
           </button>
+          <button
+                className="bg-black hover:bg-black text-white font-bold py-3 px-6 rounded-lg shadow-md flex items-center gap-2"
+                onClick={() => router.push("/manager-login")}
+          >
+          <Briefcase size={24} /> Manager
+          </button>
+
           <button
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md flex items-center gap-2"
             onClick={() => router.push("/employee-login")}

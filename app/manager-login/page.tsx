@@ -3,42 +3,48 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Shield } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import Image from "next/image";
 
-export default function AdminLogin() {
+export default function ManagerLogin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
+    setError("");
+  
     try {
-      const res = await fetch("/api/admin-login", {
+      const response = await fetch("/api/manager-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("isAuthenticated", "true");
-        router.push("/admin-dashboard");
+  
+      const data = await response.json();
+      console.log("Login Response:", data); // ✅ Debugging: Ensure ID is present
+  
+      if (response.ok) {
+        // ✅ Store ID and other manager details in localStorage
+        localStorage.setItem("manager", JSON.stringify(data.manager));
+  
+        // ✅ Redirect to dashboard with manager ID
+        router.push(`/manager-dashboard?id=${data.manager.id}`);
       } else {
         setError(data.message || "Invalid credentials");
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      console.error("Login Error:", err);
+      setError("Something went wrong. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -51,9 +57,11 @@ export default function AdminLogin() {
         <div className="flex flex-col items-center">
           <Image src="/Maxpo_Logo_Black.png" alt="Logo" width={180} height={80} />
           <h2 className="text-2xl font-bold text-gray-800 mt-4 flex items-center gap-2">
-            <Shield size={28} /> Admin Portal
+            <Briefcase size={28} /> Manager Portal
           </h2>
         </div>
+
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
 
         <form className="mt-6" onSubmit={handleLogin}>
           <div className="mb-4">
@@ -78,7 +86,6 @@ export default function AdminLogin() {
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
           <button
             type="submit"
             className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition"

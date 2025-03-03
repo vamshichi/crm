@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -30,12 +31,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email already in use" }, { status: 409 });
     }
 
+    // 🔹 Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create the manager
     const manager = await prisma.manager.create({
       data: {
         name,
         email,
-        password, // You should hash this before storing (bcrypt recommended)
+        password: hashedPassword, // Store hashed password
         departmentId,
       },
     });
