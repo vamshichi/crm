@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ManagerDashboard() {
+function ManagerDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [manager, setManager] = useState<{ id: string; name: string; email: string; department: string } | null>(null);
@@ -28,8 +28,16 @@ export default function ManagerDashboard() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-    <h1 className="text-2xl font-bold">Welcome, {manager.name}</h1>
-  </div>
-  
+      <h1 className="text-2xl font-bold">Welcome, {manager.name}</h1>
+    </div>
+  );
+}
+
+// ✅ Wrap it with Suspense in your page
+export default function ManagerDashboard() {
+  return (
+    <Suspense fallback={<p>Loading dashboard...</p>}>
+      <ManagerDashboardContent />
+    </Suspense>
   );
 }
