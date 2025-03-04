@@ -25,7 +25,7 @@ export default function EmployeeSidebar({
     localStorage.removeItem("employee"); // ✅ Remove stored employee data
     localStorage.removeItem("isAuthenticated"); // ✅ Ensure session is cleared
     console.log("🔑 Token deleted successfully"); 
-    router.push("/employee-login"); // ✅ Redirect to login page
+    router.push("/"); // ✅ Redirect to login page
   };
 
   return (
