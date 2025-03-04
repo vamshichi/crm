@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Briefcase, LayoutDashboard, LogOut, Target, UserPlus, Users } from "lucide-react"; // Importing icons
+import { ArrowLeft, Briefcase, LayoutDashboard, LogOut, Target } from "lucide-react"; // Importing necessary icons
 import { useRouter } from "next/navigation";
 
 interface SidebarProps {
@@ -21,29 +21,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
 
   return (
     <aside className="w-64 bg-blue-900 text-white p-6 flex flex-col min-h-screen fixed">
-      <h2 className="text-xl font-bold mb-16 text-center">Admin Panel</h2>
-
-      {/* Add Admin */}
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
-          activeTab === "add-admin" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("add-admin")}
-      >
-        <UserPlus className="w-5 h-5 mr-2" />
-        Add Admin
-      </button>
-
-      {/* Add Manager */}
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
-          activeTab === "add-manager" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("add-manager")}
-      >
-        <Users className="w-5 h-5 mr-2" />
-        Add Manager
-      </button>
+      <h2 className="text-xl font-bold mb-16 text-center">Manager Panel</h2>
 
       {/* Add Employee */}
       <button
@@ -54,17 +32,6 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       >
         <Briefcase className="w-5 h-5 mr-2" />
         Add Employee
-      </button>
-
-      {/* Add New Project */}
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
-          activeTab === "set-department-target" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("set-department-target")}
-      >
-        <Target className="w-5 h-5 mr-2" />
-        Add New Project
       </button>
 
       {/* Set Targets */}
@@ -103,9 +70,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       {/* Logout Button */}
       <button
         className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded flex items-center"
-        onClick={
-          handleLogout
-        }
+        onClick={handleLogout}
       >
         <LogOut className="w-5 h-5 mr-2" />
         Logout
