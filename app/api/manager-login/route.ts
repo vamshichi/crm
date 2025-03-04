@@ -1,46 +1,46 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key"; // Keep this secret and use .env
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
-    // Find admin by email
-    const admin = await prisma.admin.findUnique({
+    const manager = await prisma.manager.findUnique({
       where: { email },
+      include: { department: true },
     });
 
-    if (!admin) {
+    if (!manager) {
       return NextResponse.json({ success: false, message: "Invalid email or password" }, { status: 401 });
     }
 
-    // Compare password
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    const isPasswordValid = await bcrypt.compare(password, manager.password);
     if (!isPasswordValid) {
       return NextResponse.json({ success: false, message: "Invalid email or password" }, { status: 401 });
     }
 
-    // Generate JWT Token
+    // ✅ Generate JWT Token
     const token = jwt.sign(
-      { id: admin.id, email: admin.email, role: "admin" },
-      SECRET_KEY,
+      { id: manager.id, email: manager.email },
+      process.env.JWT_SECRET!,
       { expiresIn: "1h" }
     );
-
-    console.log("🔑 Generated Token:", token); // ✅ Print Token in Console
 
     return NextResponse.json({
       success: true,
       message: "Login successful",
-      token,
+      token, // Send JWT token
+      manager: {
+        id: manager.id,
+        name: manager.name,
+        email: manager.email,
+        department: manager.department?.name,
+      },
     });
-
   } catch (error) {
-    console.error("❌ Login Error:", error);
+    console.error("Login Error:", error);
     return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
   }
 }

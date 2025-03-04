@@ -11,6 +11,14 @@ interface SidebarProps {
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   const router = useRouter();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // ✅ Remove JWT token
+    localStorage.removeItem("employee"); // ✅ Remove stored employee data
+    localStorage.removeItem("isAuthenticated"); // ✅ Ensure session is cleared
+    console.log("🔑 Token deleted successfully"); 
+    router.push("/employee-login"); // ✅ Redirect to login page
+  };
+
   return (
     <aside className="w-64 bg-blue-900 text-white p-6 flex flex-col min-h-screen fixed">
       <h2 className="text-xl font-bold mb-16 text-center">Admin Panel</h2>
@@ -95,10 +103,9 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       {/* Logout Button */}
       <button
         className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded flex items-center"
-        onClick={() => {
-          localStorage.removeItem("isAuthenticated");
-          router.push("/");
-        }}
+        onClick={
+          handleLogout
+        }
       >
         <LogOut className="w-5 h-5 mr-2" />
         Logout

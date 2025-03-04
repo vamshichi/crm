@@ -16,22 +16,30 @@ export default function EmployeeForm() {
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   useEffect(() => {
     const fetchDepartments = async () => {
-      const response = await fetch("/api/department");
-      const data = await response.json();
-      setDepartments(data);
+      try {
+        const response = await fetch("/api/department");
+        const data = await response.json();
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
     };
+
     fetchDepartments();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setMessageType("");
 
     if (!departmentId) {
       setMessage("Please select a department.");
+      setMessageType("error");
       return;
     }
 
@@ -42,16 +50,33 @@ export default function EmployeeForm() {
     });
 
     if (response.ok) {
-      setMessage("New employee added");
+      setMessage("New employee added successfully.");
+      setMessageType("success");
+      setName("");
+      setEmail("");
+      setPassword("");
+      setRole("");
+      setDepartmentId("");
     } else {
       setMessage("Failed to create employee. Please try again.");
+      setMessageType("error");
     }
   };
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">Add Employee</h2>
-      {message && <p className="text-red-500 text-center mb-2">{message}</p>}
+
+      {message && (
+        <p
+          className={`text-center mb-2 ${
+            messageType === "success" ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         
         {/* Name Field */}
