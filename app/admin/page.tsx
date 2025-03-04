@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/admin/Sidebar";
 import AddEmployee from "@/app/components/employee/AddEmployeeForm";
 import AddDepartment from "@/app/components/admin/department";
@@ -12,10 +12,18 @@ import ManagerForm from "../components/managers/addManagerForm";
 import { Menu, X } from "lucide-react";
 
 export default function AdminPage() {
-
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
 
+  // ✅ Check if user is authenticated
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("❌ No token found, redirecting to login...");
+      router.push("/admin-login"); // Redirect to login page if not authenticated
+    }
+  }, [router]);
 
   const renderContent = () => {
     switch (activeTab) {

@@ -27,9 +27,10 @@ export default function AdminLogin() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        localStorage.setItem("isAuthenticated", "true");
-        router.push("/admin-dashboard");
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token); // ✅ Store JWT token
+        console.log("✅ Token stored:", data.token); // Debugging message
+        router.push("/admin");
       } else {
         setError(data.message || "Invalid credentials");
       }

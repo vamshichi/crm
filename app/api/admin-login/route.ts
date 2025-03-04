@@ -1,27 +1,46 @@
 import { NextResponse } from "next/server";
-import {prisma} from "@/app/lib/prisma";
-import bcrypt from "bcrypt"; // Ensure bcrypt is installed: `npm install bcrypt`
+import { prisma } from "@/app/lib/prisma";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key"; // Keep this secret and use .env
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    // Fetch admin user by email
-    const admin = await prisma.admin.findUnique({ where: { email } });
+    // Find admin by email
+    const admin = await prisma.admin.findUnique({
+      where: { email },
+    });
 
     if (!admin) {
-      return NextResponse.json({ message: "User not found" }, { status: 401 });
+      return NextResponse.json({ success: false, message: "Invalid email or password" }, { status: 401 });
     }
 
-    // Compare hashed password
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) {
-      return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
+    // Compare password
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    if (!isPasswordValid) {
+      return NextResponse.json({ success: false, message: "Invalid email or password" }, { status: 401 });
     }
 
-    return NextResponse.json({ message: "Login successful" });
+    // Generate JWT Token
+    const token = jwt.sign(
+      { id: admin.id, email: admin.email, role: "admin" },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    console.log("🔑 Generated Token:", token); // ✅ Print Token in Console
+
+    return NextResponse.json({
+      success: true,
+      message: "Login successful",
+      token,
+    });
+
   } catch (error) {
-    console.error("Login error:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    console.error("❌ Login Error:", error);
+    return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -26,14 +26,17 @@ export default function ManagerLogin() {
       });
   
       const data = await response.json();
-      console.log("Login Response:", data); // ✅ Debugging: Ensure ID is present
+      console.log("Login Response:", data); // ✅ Debugging Response
   
       if (response.ok) {
-        // ✅ Store ID and other manager details in localStorage
+        console.log("Generated Token:", data.token); // ✅ Print Token in Console
+  
+        // ✅ Store JWT Token Securely
+        localStorage.setItem("token", data.token);
         localStorage.setItem("manager", JSON.stringify(data.manager));
   
-        // ✅ Redirect to dashboard with manager ID
-        router.push(`/manager-dashboard?id=${data.manager.id}`);
+        // ✅ Redirect to dashboard
+        router.push(`/manager-dashboard`);
       } else {
         setError(data.message || "Invalid credentials");
       }
@@ -44,6 +47,7 @@ export default function ManagerLogin() {
       setLoading(false);
     }
   };
+  
   
 
   return (

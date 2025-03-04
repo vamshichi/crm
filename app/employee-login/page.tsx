@@ -17,18 +17,24 @@ export default function EmployeeLogin() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
+  
     try {
       const res = await fetch("/api/employee-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await res.json();
-
+      console.log("Generated Token:", data.token); // ✅ Debugging: Print token in frontend console
+  
       if (data.success && data.employee?.id) {
-        router.push(`/employee/${data.employee.id}`); // Redirect to Employee Dashboard
+        // ✅ Store token in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("employee", JSON.stringify(data.employee));
+  
+        // ✅ Redirect to Employee Dashboard
+        router.push(`/employee/${data.employee.id}`);
       } else {
         setError("Invalid email or password");
       }
@@ -38,6 +44,7 @@ export default function EmployeeLogin() {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
