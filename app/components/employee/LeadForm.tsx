@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation"; // Using usePathname instead of useRouter
-import { User, Mail, Building, Phone, MapPin, MessageCircle, Calendar, Loader2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { User, Mail, Building, Phone, MapPin, MessageCircle, Calendar, Loader2, DollarSign } from "lucide-react";
 
 export default function LeadForm() {
   const [formData, setFormData] = useState({
@@ -13,20 +13,21 @@ export default function LeadForm() {
     city: "",
     message: "",
     status: "HOT",
-    employeeId: "", // Set dynamically from URL
+    employeeId: "",
     callBackTime: "",
+    soldAmount: "", // Added for SOLD status
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const pathname = usePathname(); // Get the current URL path
+  const pathname = usePathname();
 
   useEffect(() => {
     const pathSegments = pathname.split("/");
-    const employeeId = pathSegments[pathSegments.length - 1]; // Extract last part of URL
+    const employeeId = pathSegments[pathSegments.length - 1];
     if (employeeId) {
-      setFormData((prev) => ({ ...prev, employeeId })); // Update employeeId dynamically
+      setFormData((prev) => ({ ...prev, employeeId }));
     }
   }, [pathname]);
 
@@ -42,10 +43,15 @@ export default function LeadForm() {
     setMessage("");
 
     try {
+      const submissionData = formData.status === "SOLD"
+  ? { ...formData }
+  : { ...formData, soldAmount: undefined }; // Set to undefined instead of deleting
+
+
       const response = await fetch("/api/addLead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
 
       const data = await response.json();
@@ -59,8 +65,9 @@ export default function LeadForm() {
           city: "",
           message: "",
           status: "HOT",
-          employeeId: formData.employeeId, // Keep employeeId
+          employeeId: formData.employeeId,
           callBackTime: "",
+          soldAmount: "", // Reset sold amount
         });
       } else {
         setMessage(data.error || "Failed to add lead.");
@@ -158,6 +165,23 @@ export default function LeadForm() {
           <option value="SOLD">Sold</option>
           <option value="CALL_BACK">Call Back</option>
         </select>
+
+        {/* Show sold amount input only if status is SOLD */}
+        {formData.status === "SOLD" && (
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-3 text-gray-500" size={18} />
+            <input
+              type="number"
+              name="soldAmount"
+              placeholder="Sold Amount"
+              className="w-full p-2 pl-10 border rounded"
+              onChange={handleChange}
+              value={formData.soldAmount}
+              required
+            />
+          </div>
+        )}
+
         <div className="relative">
           <Calendar className="absolute left-3 top-3 text-gray-500" size={18} />
           <input
@@ -168,6 +192,7 @@ export default function LeadForm() {
             value={formData.callBackTime}
           />
         </div>
+
         <button
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded flex justify-center items-center gap-2"
