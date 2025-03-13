@@ -3,7 +3,9 @@
 import CircularProgress from "@/app/components/ui/CircularProgress" // Adjust the path as needed
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Trash2, Eye, ChevronDown, ChevronUp } from "lucide-react"
+import { Trash2, Eye, ChevronDown, ChevronUp, Edit } from "lucide-react"
+import UpdateEmployeeForm from "../components/employee/UpdateEmployee"
+
 interface Lead {
   id: string
   status: string
@@ -13,6 +15,9 @@ interface Lead {
 interface Employee {
   id: string
   name: string
+  email: string
+  role: string
+  departmentId: string
   leads: Lead[]
 }
 
@@ -30,7 +35,9 @@ const DepartmentList = () => {
   const [error, setError] = useState<string | null>(null)
   const [expandedDepartments, setExpandedDepartments] = useState<string[]>([])
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
+  const [selectedEmployeeForUpdate, setSelectedEmployeeForUpdate] = useState<Employee | null>(null);
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   const router = useRouter()
 
@@ -55,6 +62,14 @@ const DepartmentList = () => {
   const handleEmployeeSelect = (employee: Employee) => {
     setSelectedEmployee(employee)
   }
+
+  const handleUpdate = (employee: Employee) => {
+    console.log("Updating Employee:", employee); // Debugging
+    if (!employee) return;
+    setSelectedEmployeeForUpdate(employee);
+    setIsFormOpen(true);
+  };
+  
 
   const confirmDelete = async () => {
     if (!selectedEmployee) return
@@ -197,32 +212,41 @@ const DepartmentList = () => {
         const empHotLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "HOT").length;
 
         return (
-          <tr key={emp.id} className="hover:bg-gray-50">
-            <td className="border p-1 sm:p-2 text-xs sm:text-sm whitespace-nowrap">{emp.name}</td>
-            <td className="border p-1 sm:p-2 text-center text-xs sm:text-sm whitespace-nowrap">{totalLeads}</td>
-            <td className="border p-1 sm:p-2 text-center text-green-600 font-bold text-xs sm:text-sm whitespace-nowrap">
-              {soldLeads}
-            </td>
-            <td className="border p-1 sm:p-2 text-center text-red-600 font-bold text-xs sm:text-sm whitespace-nowrap">
-              {empHotLeads}
-            </td>
-            <td className="border p-2 text-center whitespace-nowrap">
-              <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center">
-                <button
-                  onClick={() => router.push(`/employee/${emp.id}`)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
-                >
-                  <Eye size={14} className="mr-1" /> View
-                </button>
-                <button
-                  onClick={() => handleEmployeeSelect(emp)}
-                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
-                >
-                  <Trash2 size={14} className="mr-1" /> Delete
-                </button>
-              </div>
-            </td>
-          </tr>
+<tr key={emp.id} className="hover:bg-gray-50">
+  <td className="border p-1 sm:p-2 text-xs sm:text-sm whitespace-nowrap">{emp.name}</td>
+  <td className="border p-1 sm:p-2 text-center text-xs sm:text-sm whitespace-nowrap">{totalLeads}</td>
+  <td className="border p-1 sm:p-2 text-center text-green-600 font-bold text-xs sm:text-sm whitespace-nowrap">
+    {soldLeads}
+  </td>
+  <td className="border p-1 sm:p-2 text-center text-red-600 font-bold text-xs sm:text-sm whitespace-nowrap">
+    {empHotLeads}
+  </td>
+  <td className="border p-2 text-center whitespace-nowrap">
+    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center">
+      <button
+        onClick={() => router.push(`/employee/${emp.id}`)}
+        className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
+      >
+        <Eye size={14} className="mr-1" /> View
+      </button>
+
+      <button
+        onClick={() => handleUpdate(emp)} // ✅ Opens form with details
+        className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
+      >
+        <Edit size={14} className="mr-1" /> Update
+      </button>
+
+      <button
+        onClick={() => handleEmployeeSelect(emp)}
+        className="bg-red-600 hover:bg-red-700 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
+      >
+        <Trash2 size={14} className="mr-1" /> Delete
+      </button>
+    </div>
+  </td>
+</tr>
+
         );
       })}
     </tbody>
@@ -236,6 +260,18 @@ const DepartmentList = () => {
           )
         })
       )}
+    {isFormOpen && selectedEmployeeForUpdate && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <UpdateEmployeeForm 
+        employeeId={selectedEmployeeForUpdate.id} 
+        onClose={() => setIsFormOpen(false)} 
+      />
+    </div>
+  </div>
+)}
+
+
       {selectedEmployee && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg text-center w-full max-w-sm">

@@ -1,9 +1,10 @@
 "use client"
 
 import CircularProgress from "@/app/components/ui/CircularProgress"; // Adjust the path as needed
-import { ChevronDown, ChevronUp, Eye, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Eye, Trash2, Pencil } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import UpdateEmployee from "../components/employee/UpdateEmployee";
 
 interface Lead {
   id: string
@@ -37,6 +38,8 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   const router = useRouter()
 
@@ -73,7 +76,10 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
   const handleEmployeeSelect = (employee: Employee) => {
     setSelectedEmployee(employee)
   }
-
+  const handleUpdateClick = (employeeId: string) => {
+    setSelectedEmployeeId(employeeId);
+    setShowUpdateModal(true);
+  };
   const confirmDelete = async () => {
     if (!selectedEmployee) return
 
@@ -254,6 +260,12 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                                       <Eye size={14} className="mr-1" /> View
                                     </button>
                                     <button
+                            onClick={() => handleUpdateClick(emp.id)}
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
+                          >Update
+                            <Pencil size={18} />
+                          </button>
+                                    <button
                                       onClick={() => handleEmployeeSelect(emp)}
                                       className="bg-red-600 hover:bg-red-700 text-white py-1 px-2 text-xs sm:text-sm rounded flex items-center justify-center"
                                     >
@@ -273,6 +285,13 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
             </div>
           )
         })
+      )}
+      {showUpdateModal && selectedEmployeeId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+            <UpdateEmployee employeeId={selectedEmployeeId} onClose={() => setShowUpdateModal(false)} />
+          </div>
+        </div>
       )}
 
       {selectedEmployee && (
