@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { User, Mail, Building, Phone, MapPin, MessageCircle, Calendar, Loader2, DollarSign } from "lucide-react";
+import { User, Mail, Building, Phone, MapPin, MessageCircle, Calendar, Loader2,  } from "lucide-react";
 
 export default function LeadForm() {
   const [formData, setFormData] = useState({
@@ -15,7 +15,8 @@ export default function LeadForm() {
     status: "HOT",
     employeeId: "",
     callBackTime: "",
-    soldAmount: "", // Added for SOLD status
+    // designation:"",
+    // soldAmount: "", // Added for SOLD status
   });
 
   const [loading, setLoading] = useState(false);
@@ -67,7 +68,8 @@ export default function LeadForm() {
           status: "HOT",
           employeeId: formData.employeeId,
           callBackTime: "",
-          soldAmount: "", // Reset sold amount
+          // designation:"",
+          // soldAmount: "", // Reset sold amount
         });
       } else {
         setMessage(data.error || "Failed to add lead.");
@@ -167,7 +169,7 @@ export default function LeadForm() {
         </select>
 
         {/* Show sold amount input only if status is SOLD */}
-        {formData.status === "SOLD" && (
+        {/* {formData.status === "SOLD" && (
           <div className="relative">
             <DollarSign className="absolute left-3 top-3 text-gray-500" size={18} />
             <input
@@ -180,7 +182,7 @@ export default function LeadForm() {
               required
             />
           </div>
-        )}
+        )} */}
 
         <div className="relative">
           <Calendar className="absolute left-3 top-3 text-gray-500" size={18} />

@@ -1,11 +1,13 @@
 "use client"
 
 import LeadFilter from "@/app/components/employee/LeadFilter"
+import { DollarSign } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
 import * as XLSX from "xlsx"
 
 interface Lead {
+  // amount: ReactNode
   id: string
   name: string
   email: string
@@ -17,6 +19,7 @@ interface Lead {
   phone: string
   company: string
   callBackTime: string
+  soldAmount?: number;
 }
 
 interface EmployeeLeadsProps {
@@ -229,73 +232,86 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
         ) : filteredLeads.length === 0 ? (
           <p className="text-gray-500">No leads found.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Company
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    City
-                  </th>
-                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  designaction
-                  </th> */}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Note
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Call Back Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking">Action</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLeads.map((lead) => (
-                  <tr key={lead.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.company}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.phone}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.city}</td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap">{lead.designaction}</td> */}
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-  {new Date(lead.callBackTime).toLocaleString("en-IN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  })}
-</td>
-                    <td className="px-6 py-4 whitespace-nowrap" >   
-                      <button
-                        onClick={() => handleEditClick(lead)}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                      >
-                        Edit
-                      </button> </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+<div className="overflow-x-auto">
+  <table className="min-w-full bg-white">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Name
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Email
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Company
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Contact
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          City
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Note
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Status
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Call Back Time
+        </th>
+        {/* <th className="px-6 py-3 text-left text-xs font-medium test-gray-500 uppercase tracking-wider">Designaction</th> */}
+        {/* Conditionally Render Amount Header */}
+        {/* {filteredLeads.some((lead) => lead.soldAmount) && (
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Amount
+          </th>
+        )} */}
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-200">
+      {filteredLeads.map((lead) => (
+        <tr key={lead.id}>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.name}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.email}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.company}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.phone}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.city}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.message}</td>
+          <td className="px-6 py-4 whitespace-nowrap">{lead.status}</td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            {new Date(lead.callBackTime).toLocaleString("en-IN", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
+          </td>
+          {/* <td className="px-6 py-4 whitespace-nowrap">{lead.designation}</td> */}
+          {/* Conditionally Render Amount Column */}
+          {lead.soldAmount && (
+            <td className="px-6 py-4 whitespace-nowrap">{lead.soldAmount
+            }</td>
+          )}
+          <td className="px-6 py-4 whitespace-nowrap">
+            <button
+              onClick={() => handleEditClick(lead)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
+              Edit
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         )}
         {selectedLead && (
   <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center p-4">
@@ -384,6 +400,21 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
           </select>
         </div>
 
+        {formData.status === "SOLD" && (
+          <div className="relative">
+            <DollarSign className="absolute left-3 top-3 text-gray-500" size={18} />
+            <input
+              type="number"
+              name="soldAmount"
+              placeholder="Sold Amount"
+              className="w-full p-2 pl-10 border rounded"
+              onChange={handleFormChange}
+              value={formData.soldAmount}
+              required
+            />
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium">Call Back Time</label>
           <input
@@ -407,6 +438,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
     </div>
   </div>
 )}
+
       </div>
     </div>
   )
