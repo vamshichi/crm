@@ -2,21 +2,21 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { usePathname } from "next/navigation"
 import {
-  User,
-  Mail,
+  Briefcase,
   Building,
-  Phone,
+  Calendar,
+  DollarSign,
+  Loader2,
+  Mail,
   MapPin,
   MessageCircle,
-  Calendar,
-  Loader2,
-  Briefcase,
-  DollarSign,
+  Phone,
+  User,
   X,
 } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function LeadForm() {
   const [formData, setFormData] = useState({
@@ -36,6 +36,7 @@ export default function LeadForm() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [showSoldPopup, setShowSoldPopup] = useState(false)
+  // const [emailAttachment, setEmailAttachment] = useState<File | null>(null)
 
   const pathname = usePathname()
 
@@ -65,21 +66,35 @@ export default function LeadForm() {
     setShowSoldPopup(false)
   }
 
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     setEmailAttachment(e.target.files[0])
+  //   }
+  // }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setMessage("")
 
     try {
-      const submissionData = {
-        ...formData,
-        soldAmount: formData.status === "SOLD" ? formData.soldAmount : undefined,
-      }
+      const formDataObj = new FormData()
+
+      // Add all form fields to FormData
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== undefined) {
+          formDataObj.append(key, value.toString())
+        }
+      })
+
+      // Add file if it exists
+      // if (emailAttachment) {
+      //   formDataObj.append("emailAttachment", emailAttachment)
+      // }
 
       const response = await fetch("/api/addLead", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submissionData),
+        body: formDataObj,
       })
 
       const data = await response.json()
@@ -98,6 +113,7 @@ export default function LeadForm() {
           designaction: "",
           soldAmount: "0",
         })
+        // setEmailAttachment(null)
       } else {
         setMessage(data.error || "Failed to add lead.")
       }
@@ -169,13 +185,23 @@ export default function LeadForm() {
             <input
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder="Email (Optional)"
               className="w-full p-2 pl-10 border rounded"
               onChange={handleChange}
               value={formData.email}
-              required
             />
           </div>
+          {/* {formData.email && (
+            <div className="mt-2">
+              <label className="block text-sm text-gray-600 mb-1">Attach Email (Optional)</label>
+              <input
+                type="file"
+                name="emailAttachment"
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                onChange={handleFileChange}
+              />
+            </div>
+          )} */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -188,6 +214,7 @@ export default function LeadForm() {
               className="w-full p-2 pl-10 border rounded"
               onChange={handleChange}
               value={formData.company}
+              required
             />
           </div>
 
@@ -238,7 +265,6 @@ export default function LeadForm() {
             className="w-full p-2 pl-10 border rounded min-h-[80px]"
             onChange={handleChange}
             value={formData.message}
-            required
           ></textarea>
         </div>
 

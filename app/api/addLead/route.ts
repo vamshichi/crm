@@ -1,17 +1,30 @@
-import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
+import { NextResponse } from "next/server"
 
 const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    // Check if the request is multipart/form-data
+    const contentType = request.headers.get("content-type") || ""
+
+    let body
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData()
+      body = Object.fromEntries(formData)
+
+      // Handle the email attachment if it exists
+    } else {
+      body = await request.json()
+    }
+
     const { name, email, company, phone, city, message, status, employeeId, designaction, callBackTime, soldAmount } =
       body
 
     // Validation
-    if (!name || !email || !employeeId) {
-      return NextResponse.json({ error: "Name, email, and employee ID are required" }, { status: 400 })
+    if (!name || !employeeId) {
+      return NextResponse.json({ error: "Name and employee ID are required" }, { status: 400 })
     }
 
     // Check if the employee exists
@@ -27,11 +40,11 @@ export async function POST(request: Request) {
     const newLead = await prisma.lead.create({
       data: {
         name,
-        email,
+        email: email || null, // ✅ Ensures optional field
         company,
-        phone,
+        phone: phone || null, // ✅ Ensures optional field
         city,
-        message,
+        message: message || null, // ✅ Ensures optional field
         designaction,
         status,
         employeeId,
@@ -48,4 +61,3 @@ export async function POST(request: Request) {
     await prisma.$disconnect()
   }
 }
-
