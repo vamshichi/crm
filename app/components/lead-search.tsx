@@ -1,15 +1,14 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle, Loader2, Search, XCircle } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import { Search, CheckCircle, XCircle, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { searchLeadsByCompany } from "@/app/api/action/route";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { motion, AnimatePresence } from "framer-motion";
 
 // ✅ Corrected Lead Type Definition
 type Lead = {
@@ -44,27 +43,31 @@ export default function LeadSearch() {
   const [companyExists, setCompanyExists] = useState<boolean | null>(null);
 
   // ✅ Updated Function to Ensure Type Safety
-  const handleSearch = async (e: React.FormEvent) => {
+  // ✅ Updated handleSearch Function
+const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
+  
     setIsSearching(true);
     setHasSearched(false);
     setCompanyExists(null);
-
+  
     try {
-      const results = await searchLeadsByCompany(searchQuery);
-
-      // ✅ Ensure API data conforms to `Lead[]` and prevent `null` values
-      const formattedResults: Lead[] = (results as unknown as Lead[]).map((lead) => ({
-        ...lead,
-        message: lead.message ?? "", // Ensures `message` is never `null`
-        phone: lead.phone ?? "", // Ensures `phone` is never `null`
-        email: lead.email ?? "", // Ensures `email` is never `null`
-      }));
-
-      setSearchResults(formattedResults);
-      setCompanyExists(formattedResults.length > 0);
+      const response = await fetch(`/api/action/leads?company=${encodeURIComponent(searchQuery)}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch leads");
+      }
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        setSearchResults(data.leads);
+        setCompanyExists(data.leads.length > 0);
+      } else {
+        setCompanyExists(false);
+      }
+  
       setHasSearched(true);
     } catch (error) {
       console.error("Error searching leads:", error);
@@ -73,7 +76,7 @@ export default function LeadSearch() {
       setIsSearching(false);
     }
   };
-
+  
   return (
     <div className="space-y-6">
       {/* 🔍 Search Form */}
