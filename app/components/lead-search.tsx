@@ -11,11 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Define Lead type
+// ✅ Corrected Lead Type Definition
 type Lead = {
   id: string;
   name: string;
-  email: string;
+  email: string; // Ensures non-null values
   company: string;
   phone: string;
   city: string;
@@ -37,12 +37,13 @@ type Lead = {
 };
 
 export default function LeadSearch() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Lead[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [companyExists, setCompanyExists] = useState<boolean | null>(null);
 
+  // ✅ Updated Function to Ensure Type Safety
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -53,8 +54,17 @@ export default function LeadSearch() {
 
     try {
       const results = await searchLeadsByCompany(searchQuery);
-      setSearchResults(results);
-      setCompanyExists(results.length > 0);
+
+      // ✅ Ensure API data conforms to `Lead[]` and prevent `null` values
+      const formattedResults: Lead[] = (results as unknown as Lead[]).map((lead) => ({
+        ...lead,
+        message: lead.message ?? "", // Ensures `message` is never `null`
+        phone: lead.phone ?? "", // Ensures `phone` is never `null`
+        email: lead.email ?? "", // Ensures `email` is never `null`
+      }));
+
+      setSearchResults(formattedResults);
+      setCompanyExists(formattedResults.length > 0);
       setHasSearched(true);
     } catch (error) {
       console.error("Error searching leads:", error);
@@ -66,6 +76,7 @@ export default function LeadSearch() {
 
   return (
     <div className="space-y-6">
+      {/* 🔍 Search Form */}
       <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center space-x-2">
         <Input
           type="text"
@@ -79,6 +90,7 @@ export default function LeadSearch() {
         </Button>
       </form>
 
+      {/* 🔹 Search Result Alert */}
       <AnimatePresence>
         {hasSearched && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
@@ -97,6 +109,7 @@ export default function LeadSearch() {
         )}
       </AnimatePresence>
 
+      {/* 🔹 Search Results List */}
       {searchResults.length > 0 && (
         <motion.div className="space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.2 }}>
           <h3 className="text-lg font-medium">Search Results ({searchResults.length})</h3>
@@ -133,7 +146,7 @@ export default function LeadSearch() {
   );
 }
 
-// Helper function to get color based on status
+// 🔹 Helper function to get color based on status
 function getStatusColor(status: string): string {
   switch (status.toLowerCase()) {
     case "active":
