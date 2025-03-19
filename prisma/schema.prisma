@@ -41,18 +41,20 @@ model Employee {
 model Lead {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
   name         String
-  email        String
+  email        String?
   company      String
-  phone        String
+  phone        String?
   city         String
   designaction String?
-  message      String
+  message      String?
   status       LeadStatus
+  soldAmount   Float?     @default(0)  // Added this field
   callBackTime DateTime?
   employee     Employee   @relation(fields: [employeeId], references: [id])
   employeeId   String     @db.ObjectId
   createdAt    DateTime   @default(now())
 }
+
 
 model Department {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId

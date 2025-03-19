@@ -1,80 +1,103 @@
-"use client";
+"use client"
 
-import { ArrowLeft, Briefcase, LayoutDashboard, LogOut, Target } from "lucide-react"; // Importing necessary icons
-import { useRouter } from "next/navigation";
+import { ArrowLeft, Briefcase, LayoutDashboard, LogOut, Menu, Target, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 interface SidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: string
+  setActiveTab: (tab: string) => void
 }
 
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
-  const router = useRouter();
+  const router = useRouter()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // ✅ Remove JWT token
-    localStorage.removeItem("employee"); // ✅ Remove stored employee data
-    localStorage.removeItem("isAuthenticated"); // ✅ Ensure session is cleared
-    console.log("🔑 Token deleted successfully"); 
-    router.push("/"); // ✅ Redirect to login page
-  };
+    localStorage.removeItem("token")
+    localStorage.removeItem("employee")
+    localStorage.removeItem("isAuthenticated")
+    console.log("🔑 Token deleted successfully")
+    router.push("/")
+  }
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab)
+    setIsMobileMenuOpen(false)
+  }
 
   return (
-    <aside className="w-64 bg-blue-900 text-white p-6 flex flex-col min-h-screen fixed">
-      <h2 className="text-xl font-bold mb-16 text-center">Manager Panel</h2>
-
-      {/* Add Employee */}
+    <>
+      {/* Mobile Menu Button */}
       <button
-        className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
-          activeTab === "add-employee" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("add-employee")}
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden bg-blue-900 text-white p-2 rounded-lg"
       >
-        <Briefcase className="w-5 h-5 mr-2" />
-        Add Employee
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Set Targets */}
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
-          activeTab === "set-target" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("set-target")}
+      {/* Sidebar */}
+      <aside
+        className={`${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 w-64 bg-blue-900 text-white p-6 flex flex-col min-h-screen fixed left-0 top-0 z-40 transition-transform duration-300 ease-in-out`}
       >
-        <Target className="w-5 h-5 mr-2" />
-        Set Targets
-      </button>
+        <h2 className="text-xl font-bold mb-16 text-center">Manager Panel</h2>
 
-      {/* Dashboard */}
-      <button
-        className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
-          activeTab === "dashboard" ? "bg-blue-700" : ""
-        }`}
-        onClick={() => setActiveTab("dashboard")}
-      >
-        <LayoutDashboard className="w-5 h-5 mr-2" />
-        Dashboard
-      </button>
+        <button
+          className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
+            activeTab === "add-employee" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => handleTabClick("add-employee")}
+        >
+          <Briefcase className="w-5 h-5 mr-2" />
+          Add Employee
+        </button>
 
-      <div className="flex-grow" />
+        <button
+          className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
+            activeTab === "set-target" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => handleTabClick("set-target")}
+        >
+          <Target className="w-5 h-5 mr-2" />
+          Set Targets
+        </button>
 
-      {/* Back Button */}
-      <button
-        className="py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded mb-2 flex items-center"
-        onClick={() => router.back()}
-      >
-        <ArrowLeft className="w-5 h-5 mr-2" />
-        Back
-      </button>
+        <button
+          className={`py-2 px-4 mb-2 rounded w-full flex items-center ${
+            activeTab === "dashboard" ? "bg-blue-700" : ""
+          }`}
+          onClick={() => handleTabClick("dashboard")}
+        >
+          <LayoutDashboard className="w-5 h-5 mr-2" />
+          Dashboard
+        </button>
 
-      {/* Logout Button */}
-      <button
-        className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded flex items-center"
-        onClick={handleLogout}
-      >
-        <LogOut className="w-5 h-5 mr-2" />
-        Logout
-      </button>
-    </aside>
-  );
+        <div className="flex-grow" />
+
+        <button
+          className="py-2 px-4 bg-gray-600 hover:bg-gray-700 rounded mb-2 flex items-center"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back
+        </button>
+
+        <button className="py-2 px-4 bg-red-600 hover:bg-red-700 rounded flex items-center" onClick={handleLogout}>
+          <LogOut className="w-5 h-5 mr-2" />
+          Logout
+        </button>
+      </aside>
+
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+    </>
+  )
 }
+

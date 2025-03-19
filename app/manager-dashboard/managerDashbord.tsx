@@ -1,95 +1,112 @@
-"use client";
+"use client"
 
-import CircularProgress from "@/app/components/ui/CircularProgress";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Eye } from "lucide-react";
+import CircularProgress from "@/app/components/ui/CircularProgress"
+import { Eye, Loader } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-interface Lead {
-  id: string;
-  status: string;
-  createdAt: string;
+interface DashboardStatsProps {
+  department: {
+    id: string
+    name: string
+    target?: number
+    totalLeads: number
+    soldLeads: number
+    managers?: Array<{
+      id: string
+      name: string
+      leads: Array<{
+        id: string
+        status: string
+        createdAt: string
+      }>
+    }>
+  } | null
+  error: string | null
+  loading: boolean
 }
 
-interface Manager {
-  id: string;
-  name: string;
-  leads: Lead[];
-}
+export default function DashboardStats({ department, error, loading }: DashboardStatsProps) {
+  const router = useRouter()
 
-interface Department {
-  id: string;
-  name: string;
-  target?: number;
-  totalLeads: number;
-  soldLeads: number;
-  managers?: Manager[];
-}
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    )
+  }
 
-const ManagerDashboard = () => {
-  const [department, setDepartment] = useState<Department | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg text-center mx-4 my-6">{error}</div>
+    )
+  }
 
-  useEffect(() => {
-    const fetchManagerData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("Unauthorized: No token found");
+  if (!department) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg text-center mx-4 my-6">
+        No department data found. Please contact an administrator.
+      </div>
+    )
+  }
 
-        const response = await fetch("/api/manager_department", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch department data");
-        const data = await response.json();
-        setDepartment(data);
-      } catch (err) {
-        setError((err as Error).message);
-      }
-    };
-    fetchManagerData();
-  }, []);
-
-  if (error) return <div className="text-red-600 text-center p-4">{error}</div>;
-  if (!department) return <div className="text-gray-500 text-center p-4">Loading department data...</div>;
-
-  const target = department.target || 0;
-  const totalLeadsPercentage = target > 0 ? Math.min(Math.round((department.totalLeads / target) * 100), 100) : 0;
-  const soldLeadsPercentage = target > 0 ? Math.min(Math.round((department.soldLeads / target) * 100), 100) : 0;
-  const remaining = target > 0 ? Math.max(target - department.soldLeads, 0) : 0;
-  const remainingPercentage = target > 0 ? Math.min(Math.round((remaining / target) * 100), 100) : 0;
+  const target = department.target || 0
+  const totalLeadsPercentage = target > 0 ? Math.min(Math.round((department.totalLeads / target) * 100), 100) : 0
+  const soldLeadsPercentage = target > 0 ? Math.min(Math.round((department.soldLeads / target) * 100), 100) : 0
+  const remaining = target > 0 ? Math.max(target - department.soldLeads, 0) : 0
+  const remainingPercentage = target > 0 ? Math.min(Math.round((remaining / target) * 100), 100) : 0
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-2xl font-semibold text-center">{department.name} Department</h3>
+    <div className="max-w-4xl mx-auto p-4 space-y-6">
+      <h3 className="text-xl sm:text-2xl font-semibold text-center">{department.name} Department</h3>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 py-6">
-        <CircularProgress value={totalLeadsPercentage} text={`${department.totalLeads}`}  />
-        <CircularProgress value={soldLeadsPercentage} text={`${department.soldLeads}`}  />
-        <CircularProgress value={remainingPercentage} text={`${remaining}`}  />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-4 sm:py-6">
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28">
+            <CircularProgress value={totalLeadsPercentage} text={`${department.totalLeads}`} />
+          </div>
+          <p className="text-center mt-2 text-sm text-gray-600">Total Leads</p>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28">
+            <CircularProgress value={soldLeadsPercentage} text={`${department.soldLeads}`} />
+          </div>
+          <p className="text-center mt-2 text-sm text-gray-600">Sold Leads</p>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28">
+            <CircularProgress value={remainingPercentage} text={`${remaining}`} />
+          </div>
+          <p className="text-center mt-2 text-sm text-gray-600">Remaining</p>
+        </div>
       </div>
 
-      <h4 className="text-lg font-semibold text-center">Managers</h4>
-      {department.managers && department.managers.length > 0 ? (
-        <ul className="border border-gray-300 rounded-lg p-4">
-          {department.managers.map((manager) => (
-            <li key={manager.id} className="flex justify-between p-2 border-b last:border-0">
-              <span>{manager.name}</span>
-              <button
-                onClick={() => router.push(`/manager/${manager.id}`)}
-                className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+        <h4 className="text-lg font-semibold text-center mb-4">Managers</h4>
+        {department.managers && department.managers.length > 0 ? (
+          <div className="space-y-2">
+            {department.managers.map((manager) => (
+              <div
+                key={manager.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg"
               >
-                <Eye size={14} className="mr-1" /> View
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-center text-gray-500">No managers found.</p>
-      )}
+                <span className="font-medium mb-2 sm:mb-0">{manager.name}</span>
+                <button
+                  onClick={() => router.push(`/manager/${manager.id}`)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded flex items-center justify-center gap-1 text-sm w-full sm:w-auto"
+                >
+                  <Eye size={16} /> <span>View Details</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 py-4">No managers found.</p>
+        )}
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default ManagerDashboard;

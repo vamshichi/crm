@@ -23,14 +23,12 @@ export async function PUT(request: NextRequest) {
       message?: string
       status?: LeadStatus
       callBackTime?: Date | null
+      soldAmount?: number  // ✅ Added soldAmount
     }
 
     const updateData: LeadUpdateData = {}
 
     // Prepare the data for update
-    // const updateData: any = {}
-
-    // Only include fields that are provided in the request
     if (data.name !== undefined) updateData.name = data.name
     if (data.email !== undefined) updateData.email = data.email
     if (data.company !== undefined) updateData.company = data.company
@@ -41,10 +39,7 @@ export async function PUT(request: NextRequest) {
 
     // Handle status update - ensure it's a valid enum value
     if (data.status !== undefined) {
-      // Convert status to uppercase to match enum values
       const statusValue = data.status.toUpperCase()
-
-      // Validate that the status is a valid LeadStatus enum value
       if (Object.values(LeadStatus).includes(statusValue as LeadStatus)) {
         updateData.status = statusValue as LeadStatus
       } else {
@@ -55,6 +50,16 @@ export async function PUT(request: NextRequest) {
     // Handle callBackTime if provided
     if (data.callBackTime !== undefined) {
       updateData.callBackTime = new Date(data.callBackTime)
+    }
+
+    // ✅ Handle soldAmount if provided and is a valid number
+    if (data.soldAmount !== undefined) {
+      const soldAmountValue = Number(data.soldAmount)
+      if (!isNaN(soldAmountValue) && soldAmountValue >= 0) {
+        updateData.soldAmount = soldAmountValue
+      } else {
+        return NextResponse.json({ error: "Invalid soldAmount value" }, { status: 400 })
+      }
     }
 
     // Update the lead in the database
@@ -73,4 +78,3 @@ export async function PUT(request: NextRequest) {
     await prisma.$disconnect()
   }
 }
-
