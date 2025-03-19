@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
+import { NextResponse } from "next/server";
 
 // ✅ Handle GET requests
 export async function GET(req: Request) {
@@ -23,13 +23,20 @@ export async function GET(req: Request) {
       },
       include: {
         employee: {
-          include: {
-            department: true,
+          select: {
+            id: true,
+            name: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
     });
-
+    
     return NextResponse.json({ success: true, leads }, { status: 200 });
   } catch (error) {
     console.error("Error searching leads:", error);
