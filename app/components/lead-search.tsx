@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Search, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { searchLeadsByCompany } from "@/app/api/action/lead-action";
+import { searchLeadsByCompany } from "@/app/api/action/route";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
