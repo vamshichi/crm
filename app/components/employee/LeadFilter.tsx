@@ -22,14 +22,14 @@ const statuses = ["HOT", "COLD", "WARM", "SOLD", "CALL_BACK"] as const
 type Status = (typeof statuses)[number]
 
 interface ImportedLead {
-  Name: string
-  Email: string
-  Company: string
-  Phone: string
-  City: string
-  Message: string
-  Status: Status
-  "Call Back Time": string
+  Name?: string
+  Email?: string
+  Company?: string
+  Phone?: string
+  City?: string
+  Message?: string
+  Status?: Status
+  "Call Back Time" ?: string
 }
 
 const LeadFilter: React.FC<LeadFilterProps> = ({
@@ -61,14 +61,14 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
       const jsonData = XLSX.utils.sheet_to_json<ImportedLead>(sheet)
 
       const formattedData = jsonData.map((lead) => ({
-        name: lead.Name,
-        email: lead.Email,
-        company: lead.Company,
-        phone: lead.Phone,
-        city: lead.City,
-        message: lead.Message,
-        status: lead.Status,
-        callBackTime: lead["Call Back Time"],
+        name: lead.Name || "",
+        email: lead.Email || "",
+        company: lead.Company || "",
+        phone: lead.Phone || "",
+        city: lead.City || "",
+        message: lead.Message || "",
+        status: lead.Status || "",
+        callBackTime: lead["Call Back Time"] || "",
         employeeId: employeeId,
       }))
 
