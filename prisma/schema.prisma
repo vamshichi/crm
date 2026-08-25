@@ -45,7 +45,7 @@ model Lead {
   company      String
   phone        String?
   city         String
-  designaction String?
+  designation  String?
   message      String?
   status       LeadStatus
   soldAmount   Float?     @default(0)  // Added this field
@@ -75,9 +75,16 @@ model Target {
 }
 
 enum LeadStatus {
-  HOT
-  COLD
+  NEW
+  IN_PROGRESS
+  FOLLOW_UP
+  CONTACTED
   WARM
+  COLD
+  NOT_INTERESTED
+  IN_FUTURE
   SOLD
+  REGISTERED
+  DECLINED
   CALL_BACK
 }

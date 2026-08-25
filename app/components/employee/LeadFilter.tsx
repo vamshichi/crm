@@ -10,6 +10,7 @@ interface LeadFilterProps {
   fromDate: string | null
   toDate: string | null
   employeeId: string
+  canExport: boolean
   onStatusChange: (status: string | null) => void
   onFromDateChange: (date: string | null) => void
   onToDateChange: (date: string | null) => void
@@ -18,13 +19,27 @@ interface LeadFilterProps {
   onFileImport: (file: File) => void
 }
 
-const statuses = ["HOT", "COLD", "WARM", "SOLD", "CALL_BACK"] as const
+const statuses = [
+  "NEW",
+  "IN_PROGRESS",
+  "FOLLOW_UP",
+  "CONTACTED",
+  "WARM",
+  "COLD",
+  "NOT_INTERESTED",
+  "IN_FUTURE",
+  "SOLD",
+  "REGISTERED",
+  "DECLINED",
+  "CALL_BACK",
+] as const
 type Status = (typeof statuses)[number]
 
 interface ImportedLead {
   Name?: string
   Email?: string
   Company?: string
+  Designation?: string
   Phone?: string
   City?: string
   Message?: string
@@ -37,6 +52,7 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
   fromDate,
   toDate,
   employeeId,
+  canExport,
   onStatusChange,
   onFromDateChange,
   onToDateChange,
@@ -64,6 +80,7 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
         name: lead.Name || "",
         email: lead.Email || "",
         company: lead.Company || "",
+        designation: lead.Designation || "",
         phone: lead.Phone || "",
         city: lead.City || "",
         message: lead.Message || "",
@@ -84,8 +101,8 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
 
   const downloadTemplate = () => {
     const templateData = [
-      ["Name", "Email", "Company", "Phone", "City", "Message", "Status", "Call Back Time"],
-      ["John Doe", "john@example.com", "ABC Corp", "1234567890", "New York", "Interested", "HOT", "2025-02-24T10:00"],
+      ["Name", "Email", "Company", "Designation", "Phone", "City", "Message", "Status", "Call Back Time"],
+      ["John Doe", "john@example.com", "ABC Corp", "Manager", "1234567890", "New York", "Interested", "New", "2025-02-24T10:00"],
     ]
 
     const worksheet = XLSX.utils.aoa_to_sheet(templateData)
@@ -154,13 +171,15 @@ const LeadFilter: React.FC<LeadFilterProps> = ({
       </div>
 
       {/* Export Button */}
-      <button
-        onClick={onExport}
-        className="px-3 py-1.5 text-sm rounded-md border bg-yellow-500 text-white flex items-center gap-1"
-      >
-        <FileText size={16} />
-        <span className="hidden sm:inline">Export</span>
-      </button>
+      {canExport && (
+  <button
+    onClick={onExport}
+    className="px-3 py-1.5 text-sm rounded-md border bg-yellow-500 text-white flex items-center gap-1"
+  >
+    <FileText size={16} />
+    <span className="hidden sm:inline">Export</span>
+  </button>
+)}
 
       {/* Import Button */}
       <button

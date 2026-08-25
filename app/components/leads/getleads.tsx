@@ -4,7 +4,14 @@ import LeadFilter from "@/app/components/employee/LeadFilter"
 import type React from "react"
 import { useEffect, useState } from "react"
 import * as XLSX from "xlsx"
-import { DollarSign, Edit, Filter, MoreHorizontal, X } from "lucide-react"
+import {
+  DollarSign,
+  Edit,
+  Filter,
+  MoreHorizontal,
+  X,
+  UserRoundCog,
+} from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,18 +33,22 @@ interface Lead {
   company: string
   callBackTime: string
   soldAmount: string
-}
-
-interface EmployeeLeadsProps {
   employeeId: string
 }
 
-const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
+interface EmployeeLeadsProps {
+  employeeId: string;
+  canExport: boolean;
+  canTransfer: boolean;
+}
+
+const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId, canExport, canTransfer }) => {
   const [leads, setLeads] = useState<Lead[]>([])
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
-  const [searchTerm, ] = useState("")
+  const [searchTerm,] = useState("")
+
 
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
   const [fromDate, setFromDate] = useState<string | null>(null)
@@ -47,6 +58,13 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
   const [expandedRow, setExpandedRow] = useState<string | null>(null)
   const [showSoldPopup, setShowSoldPopup] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [showTransferModal, setShowTransferModal] = useState(false)
+  const [transferLead, setTransferLead] = useState<Lead | null>(null)
+  const [employees, setEmployees] = useState<
+    { id: string; name: string; email: string; departmentId: string }[]
+  >([])
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("")
+  const [transferring, setTransferring] = useState(false)
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -100,7 +118,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
   }, [selectedStatus, fromDate, toDate, leads, searchTerm])
 
   const totalLeads = filteredLeads.length
-  const hotLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "hot").length
+  const newLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "new").length
   const soldLeads = filteredLeads.filter((lead) => lead.status.toLowerCase() === "sold").length
   const target = 50
   const remainingTarget = target > soldLeads ? target - soldLeads : 0
@@ -189,6 +207,144 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
     setFormData(lead)
   }
 
+  const handleTransferClick = async (lead: Lead) => {
+  setTransferLead(lead)
+  setSelectedEmployeeId("")
+  setShowTransferModal(true)
+
+  try {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      alert("Please login again")
+      return
+    }
+
+    const response = await fetch(
+      "/api/leads/transfer",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    const data = await response.json()
+
+    console.log(
+      "Transfer employees response:",
+      data
+    )
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+          "Failed to fetch employees"
+      )
+    }
+
+    setEmployees(data.employees || [])
+  } catch (error) {
+    console.error(
+      "Error fetching employees:",
+      error
+    )
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Unable to load employees"
+    )
+  }
+}
+
+ const handleTransferLead = async () => {
+  if (!transferLead || !selectedEmployeeId) {
+    alert("Please select an employee")
+    return
+  }
+
+  try {
+    setTransferring(true)
+
+    const token =
+      localStorage.getItem("token")
+
+    if (!token) {
+      alert("Please login again")
+      return
+    }
+
+    const response = await fetch(
+      "/api/leads/transfer",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          leadId: transferLead.id,
+          employeeId:
+            selectedEmployeeId,
+        }),
+      }
+    )
+
+    const data =
+      await response.json()
+
+    console.log(
+      "Transfer response:",
+      data
+    )
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+          "Failed to transfer lead"
+      )
+    }
+
+    setLeads((prev) =>
+      prev.filter(
+        (lead) =>
+          lead.id !== transferLead.id
+      )
+    )
+
+    setFilteredLeads((prev) =>
+      prev.filter(
+        (lead) =>
+          lead.id !== transferLead.id
+      )
+    )
+
+    setShowTransferModal(false)
+    setTransferLead(null)
+    setSelectedEmployeeId("")
+
+    alert(
+      "Lead transferred successfully!"
+    )
+  } catch (error) {
+    console.error(
+      "Transfer error:",
+      error
+    )
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Failed to transfer lead"
+    )
+  } finally {
+    setTransferring(false)
+  }
+}
+
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
 
@@ -223,7 +379,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
         minute: "2-digit",
         hour12: true,
       })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return "Invalid Date"
     }
@@ -238,13 +394,20 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
   }
 
   const getStatusBadge = (status: string) => {
-    const statusColors = {
-      HOT: "bg-red-100 text-red-800",
-      WARM: "bg-yellow-100 text-yellow-800",
-      COLD: "bg-blue-100 text-blue-800",
-      SOLD: "bg-green-100 text-green-800",
-      CALL_BACK: "bg-purple-100 text-purple-800",
-    }
+    const statusColors: Record<string, string> = {
+  NEW: "bg-gray-100 text-gray-800",
+  IN_PROGRESS: "bg-indigo-100 text-indigo-800",
+  FOLLOW_UP: "bg-orange-100 text-orange-800",
+  CONTACTED: "bg-cyan-100 text-cyan-800",
+  WARM: "bg-yellow-100 text-yellow-800",
+  COLD: "bg-blue-100 text-blue-800",
+  NOT_INTERESTED: "bg-red-100 text-red-800",
+  IN_FUTURE: "bg-purple-100 text-purple-800",
+  SOLD: "bg-green-100 text-green-800",
+  REGISTERED: "bg-emerald-100 text-emerald-800",
+  DECLINED: "bg-rose-100 text-rose-800",
+  CALL_BACK: "bg-violet-100 text-violet-800",
+}
 
     const color = statusColors[status as keyof typeof statusColors] || "bg-gray-100 text-gray-800"
 
@@ -259,8 +422,8 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
     <Card className="border-0 shadow-md">
       <CardHeader className="pb-0">
         <div className="flex flex-col gap-4">
-                <LeadSearchPage/>
-              
+          <LeadSearchPage />
+
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-xl font-semibold">Employee Leads</h2>
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -285,8 +448,8 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
             </Card>
             <Card className="border border-yellow-100 bg-yellow-50 shadow-sm">
               <CardContent className="p-3 text-center">
-                <p className="text-lg font-bold">{hotLeads}</p>
-                <p className="text-xs text-gray-500">Hot Leads</p>
+                <p className="text-lg font-bold">{newLeads}</p>
+                <p className="text-xs text-gray-500">New Leads</p>
               </CardContent>
             </Card>
             <Card className="border border-green-100 bg-green-50 shadow-sm">
@@ -317,6 +480,7 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                 fromDate={fromDate}
                 toDate={toDate}
                 employeeId={employeeId}
+                canExport={canExport}
                 onStatusChange={setSelectedStatus}
                 onFromDateChange={setFromDate}
                 onToDateChange={setToDate}
@@ -394,6 +558,13 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                               <Edit className="mr-2 h-4 w-4" />
                               Edit Lead
                             </DropdownMenuItem>
+
+                            {canTransfer && (
+                              <DropdownMenuItem onClick={() => handleTransferClick(lead)}>
+                                <UserRoundCog className="mr-2 h-4 w-4" />
+                                Transfer Lead
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -599,10 +770,17 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
                       onChange={handleFormChange}
                       className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="HOT">HOT</option>
+                      <option value="NEW">NEW</option>
+                      <option value="IN_PROGRESS">IN PROGRESS</option>
+                      <option value="FOLLOW_UP">FOLLOW UP</option>
+                      <option value="CONTACTED">CONTACTED</option>
                       <option value="WARM">WARM</option>
                       <option value="COLD">COLD</option>
+                      <option value="NOT_INTERESTED">NOT INTERESTED</option>
+                      <option value="IN_FUTURE">IN FUTURE</option>
                       <option value="SOLD">SOLD</option>
+                      <option value="REGISTERED">REGISTERED</option>
+                      <option value="DECLINED">DECLINED</option>
                       <option value="CALL_BACK">CALL BACK</option>
                     </select>
                   </div>
@@ -644,6 +822,78 @@ const EmployeeLeads: React.FC<EmployeeLeadsProps> = ({ employeeId }) => {
             </div>
           </div>
         )}
+        {showTransferModal && transferLead && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+    <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+
+      <div className="flex justify-between items-center mb-5">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Transfer Lead
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Transfer <strong>{transferLead.name}</strong> to another employee.
+          </p>
+        </div>
+
+        <button
+          onClick={() => {
+            setShowTransferModal(false)
+            setTransferLead(null)
+          }}
+          className="p-2 rounded-full hover:bg-gray-100"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      <div className="mb-5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Employee
+        </label>
+
+        <select
+          value={selectedEmployeeId}
+          onChange={(e) => setSelectedEmployeeId(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">
+            Select employee
+          </option>
+
+          {employees
+            .filter((emp) => emp.id !== transferLead.employeeId)
+            .map((employee) => (
+              <option key={employee.id} value={employee.id}>
+                {employee.name} - {employee.email}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      <div className="flex justify-end gap-3">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setShowTransferModal(false)
+            setTransferLead(null)
+          }}
+          disabled={transferring}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          onClick={handleTransferLead}
+          disabled={!selectedEmployeeId || transferring}
+        >
+          {transferring ? "Transferring..." : "Transfer Lead"}
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
       </CardContent>
     </Card>
   )

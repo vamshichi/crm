@@ -66,7 +66,7 @@ export default function ManagerLogin() {
         </button>
 
         <div className="flex flex-col items-center">
-          <Image src="/Maxpo_Logo_Black.png" alt="Logo" width={180} height={80} />
+          <Image src="/confex.png" alt="Logo" width={180} height={80} />
           <h2 className="text-2xl font-bold text-gray-800 mt-4 flex items-center gap-2">
             <Briefcase size={28} /> Manager Portal
           </h2>

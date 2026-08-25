@@ -61,7 +61,7 @@ export default function EmployeeLogin() {
 
         {/* Logo */}
         <div className="flex justify-center mb-4">
-          <Image src="/Maxpo_Logo_Black.png" alt="Maxpo Logo" width={180} height={80} />
+          <Image src="/confex.png" alt="Maxpo Logo" width={180} height={80} />
         </div>
 
         {/* Title */}

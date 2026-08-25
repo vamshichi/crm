@@ -317,7 +317,7 @@ function LeadResults({
                     <p className="text-sm text-muted-foreground line-clamp-1">{lead.company}</p>
                   </div>
                 </div>
-                <Badge
+                {/* <Badge
                   style={{
                     backgroundColor: getStatusColor(lead.status),
                     color: "white",
@@ -325,11 +325,11 @@ function LeadResults({
                   className="ml-auto"
                 >
                   {lead.status}
-                </Badge>
+                </Badge> */}
               </div>
 
               <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <span className="truncate">{lead.email}</span>
                 </div>
@@ -340,7 +340,7 @@ function LeadResults({
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <span>{lead.city}</span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <span>
@@ -353,12 +353,12 @@ function LeadResults({
                     Department: <span className="font-medium">{lead.employee?.department?.name || "N/A"}</span>
                   </span>
                 </div>
-                {lead.soldAmount !== null && lead.soldAmount !== undefined && (
+                {/* {lead.soldAmount !== null && lead.soldAmount !== undefined && (
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <span className="font-medium">${lead.soldAmount.toFixed(2)}</span>
                   </div>
-                )}
+                )} */}
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-xs text-muted-foreground">

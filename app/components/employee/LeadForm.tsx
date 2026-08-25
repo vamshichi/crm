@@ -26,10 +26,10 @@ export default function LeadForm() {
     phone: "",
     city: "",
     message: "",
-    status: "HOT",
+    status: "NEW",
     employeeId: "",
     callBackTime: "",
-    designaction: "",
+    designation: "",
     soldAmount: "0",
   })
 
@@ -107,10 +107,10 @@ export default function LeadForm() {
           phone: "",
           city: "",
           message: "",
-          status: "HOT",
+          status: "NEW",
           employeeId: formData.employeeId,
           callBackTime: "",
-          designaction: "",
+          designation: "",
           soldAmount: "0",
         })
         // setEmailAttachment(null)
@@ -252,7 +252,7 @@ export default function LeadForm() {
               placeholder="Designation"
               className="w-full p-2 pl-10 border rounded"
               onChange={handleChange}
-              value={formData.designaction}
+              value={formData.designation}
             />
           </div>
         </div>
@@ -270,10 +270,17 @@ export default function LeadForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <select name="status" className="w-full p-2 border rounded" onChange={handleChange} value={formData.status}>
-            <option value="HOT">Hot</option>
-            <option value="COLD">Cold</option>
+            <option value="NEW">New</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="FOLLOW_UP">Follow Up</option>
+            <option value="CONTACTED">Contacted</option>
             <option value="WARM">Warm</option>
+            <option value="COLD">Cold</option>
+            <option value="NOT_INTERESTED">Not Interested</option>
+            <option value="IN_FUTURE">In Future</option>
             <option value="SOLD">Sold</option>
+            <option value="REGISTERED">Registered</option>
+            <option value="DECLINED">Declined</option>
             <option value="CALL_BACK">Call Back</option>
           </select>
 

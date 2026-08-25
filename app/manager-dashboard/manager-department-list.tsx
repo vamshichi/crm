@@ -146,13 +146,13 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
           const totalLeadsPercentage = target > 0 ? Math.min(Math.round((dept.totalLeads / target) * 100), 100) : 0
           const soldLeadsPercentage = target > 0 ? Math.min(Math.round((dept.soldLeads / target) * 100), 100) : 0
 
-          // Calculate hot leads across employees (case-insensitive)
-          const hotLeads =
+          // Calculate new leads across employees (case-insensitive)
+          const newLeads =
             dept.employees?.reduce((sum, emp) => {
-              const empHot = emp.leads.filter((lead) => lead.status && lead.status.toUpperCase() === "HOT").length
-              return sum + empHot
+              const empNew = emp.leads.filter((lead) => lead.status && lead.status.toUpperCase() === "NEW").length
+              return sum + empNew
             }, 0) || 0
-          const hotLeadsPercentage = target > 0 ? Math.min(Math.round((hotLeads / target) * 100), 100) : 0
+          const newLeadsPercentage = target > 0 ? Math.min(Math.round((newLeads / target) * 100), 100) : 0
 
           // Calculate remaining: target minus sold leads
           const remaining = target > 0 ? Math.max(target - dept.soldLeads, 0) : 0
@@ -203,12 +203,12 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                   </div>
                   <p className="text-center mt-2 text-xs text-gray-600">Sold Leads</p>
                 </div>
-                {/* Hot Leads Circle */}
+                {/* New Leads Circle */}
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 sm:w-20 sm:h-20">
-                    <CircularProgress value={hotLeadsPercentage} text={`${hotLeads}`} />
+                    <CircularProgress value={newLeadsPercentage} text={`${newLeads}`} />
                   </div>
-                  <p className="text-center mt-2 text-xs text-gray-600">Prospects</p>
+                  <p className="text-center mt-2 text-xs text-gray-600">New Leads</p>
                 </div>
                 {/* Remaining Circle */}
                 <div className="flex flex-col items-center">
@@ -234,7 +234,7 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                               <th className="border p-2 text-left text-sm whitespace-nowrap">Employee</th>
                               <th className="border p-2 text-center text-sm whitespace-nowrap">Total</th>
                               <th className="border p-2 text-center text-sm whitespace-nowrap">Sold</th>
-                              <th className="border p-2 text-center text-sm whitespace-nowrap">Hot</th>
+                              <th className="border p-2 text-center text-sm whitespace-nowrap">New</th>
                               <th className="border p-2 text-center text-sm whitespace-nowrap">Actions</th>
                             </tr>
                           </thead>
@@ -242,8 +242,8 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                             {employeeDetails.map((emp) => {
                               const totalLeads = emp.leads.length
                               const soldLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "SOLD").length
-                              const empHotLeads = emp.leads.filter(
-                                (lead) => lead.status?.toUpperCase() === "HOT",
+                              const empNewLeads = emp.leads.filter(
+                                (lead) => lead.status?.toUpperCase() === "NEW",
                               ).length
 
                               return (
@@ -254,7 +254,7 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                                     {soldLeads}
                                   </td>
                                   <td className="border p-2 text-center text-red-600 font-bold text-sm whitespace-nowrap">
-                                    {empHotLeads}
+                                    {empNewLeads}
                                   </td>
                                   <td className="border p-2 text-center whitespace-nowrap">
                                     <div className="flex gap-2 justify-center">
@@ -290,7 +290,7 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                         {employeeDetails.map((emp) => {
                           const totalLeads = emp.leads.length
                           const soldLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "SOLD").length
-                          const empHotLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "HOT").length
+                          const empNewLeads = emp.leads.filter((lead) => lead.status?.toUpperCase() === "NEW").length
                           const isEmployeeExpanded = expandedEmployees.includes(emp.id)
 
                           return (
@@ -316,8 +316,8 @@ const ManagerDepartmentList = ({ managerDepartment }: ManagerDepartmentListProps
                                     <div className="text-xs text-gray-500">Sold</div>
                                   </div>
                                   <div>
-                                    <div className="font-semibold text-red-600">{empHotLeads}</div>
-                                    <div className="text-xs text-gray-500">Hot</div>
+                                    <div className="font-semibold text-red-600">{empNewLeads}</div>
+                                    <div className="text-xs text-gray-500">New</div>
                                   </div>
                                 </div>
                               </div>

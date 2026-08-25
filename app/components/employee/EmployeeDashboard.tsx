@@ -10,6 +10,15 @@ import DepartmentList from "./DepartmentList";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 import EmployeeProfile from "./EmployeeProfile";
+import { jwtDecode } from "jwt-decode";
+
+
+interface JwtPayload {
+  id?: string;
+  userId?: string;
+  role?: string;
+  exp?: number;
+}
 
 interface EmployeeProps {
   employee: {
@@ -33,59 +42,95 @@ interface Lead {
 export default function EmployeeDashboard({ employee }: EmployeeProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const role = employee.role?.toUpperCase();
 
-  
+  const [canExport, setCanExport] = useState(false);
 
-  // Inside your useEffect
- useEffect(() => {
-  async function fetchCallbackLeads() {
+  useEffect(() => {
     try {
-      const response = await fetch(`/api/leads/callback-details?employeeId=${employee.id}`);
-      const data: { leads: Lead[] } = await response.json();
+      const token = localStorage.getItem("token");
 
-      if (data.leads.length > 0) {
-        toast.success(`📞 You have ${data.leads.length} pending callback leads!`, {
-          duration: 5000,
-          position: "top-right",
-          style: {
-            background: "#2d2d2d",
-            color: "#fff",
-            borderRadius: "8px",
-            padding: "12px",
-            fontSize: "16px",
-          },
-        });
+      if (!token) {
+        console.log("❌ No JWT token found");
+        setCanExport(false);
+        return;
       }
 
-      // 🔔 Schedule reminders for upcoming calls (30 min before callBackTime)
-      data.leads.forEach((lead) => {
-        if (lead.callBackTime) {
-          const callBackDate = new Date(lead.callBackTime); // Convert to Date
-          const notificationTime = new Date(callBackDate.getTime() - 30 * 60 * 1000); // 30 mins before callback
-          const timeUntilNotification = notificationTime.getTime() - new Date().getTime(); // Use Date() directly
+      const decoded = jwtDecode<JwtPayload>(token);
 
-          if (timeUntilNotification > 0) {
-            console.log(`⏳ Notification scheduled for: ${notificationTime.toLocaleString()}`);
+      console.log("🔐 JWT:", decoded);
+      console.log("👤 JWT ROLE:", decoded.role);
 
-            setTimeout(() => {
-              alert(`⏳ Reminder: Call ${lead.name} at ${callBackDate.toLocaleTimeString()}`, );
-            }, timeUntilNotification);
-          } else {
-            console.log(`⚠️ Skipping notification: ${callBackDate.toLocaleString()} (Too close or past)`);
-          }
-        }
-      });
+      const jwtRole = decoded.role?.trim().toUpperCase();
+
+      const allowedRoles = [
+        "ADMIN",
+        "SUPER_ADMIN",
+        "MANAGER",
+      ];
+
+      const allowed = allowedRoles.includes(jwtRole || "");
+
+      console.log("🔑 NORMALIZED JWT ROLE:", jwtRole);
+      console.log("📤 CAN EXPORT:", allowed);
+
+      setCanExport(allowed);
     } catch (error) {
-      console.error("❌ Error fetching callback leads details:", error);
+      console.error("❌ Invalid JWT:", error);
+      setCanExport(false);
     }
-  }
+  }, []);
 
-  if (employee.id) {
-    fetchCallbackLeads();
-  }
-}, [employee.id]);
+  // Inside your useEffect
+  useEffect(() => {
+    async function fetchCallbackLeads() {
+      try {
+        const response = await fetch(`/api/leads/callback-details?employeeId=${employee.id}`);
+        const data: { leads: Lead[] } = await response.json();
 
-useEffect(() => {
+        if (data.leads.length > 0) {
+          toast.success(`📞 You have ${data.leads.length} pending callback leads!`, {
+            duration: 5000,
+            position: "top-right",
+            style: {
+              background: "#2d2d2d",
+              color: "#fff",
+              borderRadius: "8px",
+              padding: "12px",
+              fontSize: "16px",
+            },
+          });
+        }
+
+        // 🔔 Schedule reminders for upcoming calls (30 min before callBackTime)
+        data.leads.forEach((lead) => {
+          if (lead.callBackTime) {
+            const callBackDate = new Date(lead.callBackTime); // Convert to Date
+            const notificationTime = new Date(callBackDate.getTime() - 30 * 60 * 1000); // 30 mins before callback
+            const timeUntilNotification = notificationTime.getTime() - new Date().getTime(); // Use Date() directly
+
+            if (timeUntilNotification > 0) {
+              console.log(`⏳ Notification scheduled for: ${notificationTime.toLocaleString()}`);
+
+              setTimeout(() => {
+                alert(`⏳ Reminder: Call ${lead.name} at ${callBackDate.toLocaleTimeString()}`,);
+              }, timeUntilNotification);
+            } else {
+              console.log(`⚠️ Skipping notification: ${callBackDate.toLocaleString()} (Too close or past)`);
+            }
+          }
+        });
+      } catch (error) {
+        console.error("❌ Error fetching callback leads details:", error);
+      }
+    }
+
+    if (employee.id) {
+      fetchCallbackLeads();
+    }
+  }, [employee.id]);
+
+  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setSidebarOpen(false);
@@ -102,7 +147,7 @@ useEffect(() => {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
-      <Toaster/>
+      <Toaster />
       <button className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-green-700 text-white" onClick={toggleSidebar}>
         <Menu size={24} />
       </button>
@@ -113,8 +158,12 @@ useEffect(() => {
         <div className="mt-12 lg:mt-0">
           {activeTab === "dashboard" && (
             <div>
-              <EmployeeProfile employee={employee}/>
-              <EmployeeLeads employeeId={employee.id} />
+              <EmployeeProfile employee={employee} />
+              <EmployeeLeads
+                employeeId={employee.id}
+                canExport={canExport}
+                canTransfer={canExport}
+              />
             </div>
           )}
 

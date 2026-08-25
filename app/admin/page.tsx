@@ -17,13 +17,13 @@ export default function AdminPage() {
   const router = useRouter();
 
   // ✅ Check if user is authenticated
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.log("❌ No token found, redirecting to login...");
-      router.push("/admin-login"); // Redirect to login page if not authenticated
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     console.log("❌ No token found, redirecting to login...");
+  //     router.push("/admin-login"); // Redirect to login page if not authenticated
+  //   }
+  // }, [router]);
 
   const renderContent = () => {
     switch (activeTab) {

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     // eslint-disable-next-line prefer-const
-    let { name, email, company, phone, city, message, status, employeeId, designaction, callBackTime, soldAmount } = body
+    let { name, email, company, phone, city, message, status, employeeId, designation, callBackTime, soldAmount } = body
     console.log("Received Employee ID:", employeeId)
 
     // Ensure email is a string (to prevent array issues)
@@ -46,9 +46,9 @@ export async function POST(request: Request) {
         email: email || null,
         company,
         phone: phone || null,
-        city,
+        city: city || null,
         message: message || null,
-        designaction,
+        designation: designation || null,
         status,
         employeeId,
         callBackTime: callBackTime ? new Date(callBackTime) : null,

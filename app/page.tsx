@@ -27,7 +27,7 @@ export default function Home() {
         className="flex flex-col items-center mt-8 sm:mt-12"
       >
         <Image
-          src="/Maxpo_Logo_Black.png"
+          src="/confex.png"
           alt="Logo"
           width={200}
           height={100}
@@ -42,7 +42,7 @@ export default function Home() {
         >
           <span className="font-bold">
             <Typewriter
-              words={["Maxpo Exhibition PVT Ltd"]}
+              words={["Confex meet"]}
               loop={0}
               cursor
               cursorStyle="|"
