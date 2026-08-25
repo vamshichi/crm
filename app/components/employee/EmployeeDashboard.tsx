@@ -42,7 +42,7 @@ interface Lead {
 export default function EmployeeDashboard({ employee }: EmployeeProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const role = employee.role?.toUpperCase();
+  // const role = employee.role?.toUpperCase();
 
   const [canExport, setCanExport] = useState(false);
 

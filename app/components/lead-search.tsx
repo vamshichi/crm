@@ -10,17 +10,17 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  Phone,
-  Mail,
-  MapPin,
+  // Phone,
+  // Mail,
+  // MapPin,
   Building,
   Calendar,
   User,
-  DollarSign,
+  // DollarSign,
 } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
+// import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent,  } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"

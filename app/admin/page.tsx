@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+// import { useRouter } from "next/navigation";
 import Sidebar from "@/app/components/admin/Sidebar";
 import AddEmployee from "@/app/components/employee/AddEmployeeForm";
 import AddDepartment from "@/app/components/admin/department";
@@ -14,7 +14,7 @@ import { Menu, X } from "lucide-react";
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   // ✅ Check if user is authenticated
   // useEffect(() => {
